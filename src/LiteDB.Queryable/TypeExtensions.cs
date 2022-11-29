@@ -10,7 +10,7 @@
 		public static Type GetSequenceType(this Type type)
 		{
 			Type sequenceType = type.TryGetSequenceType();
-			return sequenceType ?? throw new ArgumentException("The type " + type.Name + " does not represent a sequence");
+			return sequenceType ?? throw new ArgumentException($"The type {type.Name} does not represent a sequence.");
 		}
 
 		public static Type TryGetSequenceType(this Type type)
