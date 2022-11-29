@@ -13,6 +13,9 @@ namespace LiteDB.Queryable
 	using System.Threading.Tasks;
 	using JetBrains.Annotations;
 
+	/// <summary>
+	///     Extension methods to execute actions on an <see cref="IQueryable" /> object asynchronously.
+	/// </summary>
 	[PublicAPI]
 	public static class LiteQueryableExtensions
 	{
@@ -21,19 +24,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously returns the first element of a sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">An <see cref="IQueryable" /> to return the first element of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -54,19 +44,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously returns the first element of a sequence that satisfies a specified condition.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}" /> to return the first element of.</param>
 		/// <param name="predicate">A function to test each element for a condition.</param>
@@ -107,19 +84,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously returns the first element of a sequence, or a default value if the sequence contains no elements.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}" /> to return the first element of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -141,19 +105,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously returns the first element of a sequence that satisfies a specified condition
 		///     or a default value if no such element is found.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}" /> to return the first element of.</param>
 		/// <param name="predicate">A function to test each element for a condition.</param>
@@ -190,19 +141,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously returns the only element of a sequence, and throws an exception
 		///     if there is not exactly one element in the sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}" /> to return the single element of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -234,19 +172,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously returns the only element of a sequence that satisfies a specified condition,
 		///     and throws an exception if more than one such element exists.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}" /> to return the single element of.</param>
 		/// <param name="predicate">A function to test an element for a condition.</param>
@@ -294,19 +219,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously returns the only element of a sequence, or a default value if the sequence is empty;
 		///     this method throws an exception if there is more than one element in the sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}" /> to return the single element of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -331,19 +243,6 @@ namespace LiteDB.Queryable
 		///     a default value if no such element exists; this method throws an exception if more than one element
 		///     satisfies the condition.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}" /> to return the single element of.</param>
 		/// <param name="predicate">A function to test an element for a condition.</param>
@@ -382,19 +281,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously returns the number of elements in a sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}" /> that contains the elements to be counted.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -414,19 +300,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously returns the number of elements in a sequence that satisfy a condition.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}" /> that contains the elements to be counted.</param>
 		/// <param name="predicate">A function to test each element for a condition.</param>
@@ -456,19 +329,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously returns a <see cref="long" /> that represents the total number of elements in a sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}" /> that contains the elements to be counted.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -489,19 +349,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously returns a <see cref="long" /> that represents the number of elements in a sequence
 		///     that satisfy a condition.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}" /> that contains the elements to be counted.</param>
 		/// <param name="predicate">A function to test each element for a condition.</param>
@@ -535,19 +382,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously determines whether a sequence contains any elements.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}" /> to check for being empty.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -568,19 +402,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously determines whether any element of a sequence satisfies a condition.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}" /> whose elements to test for a condition.</param>
 		/// <param name="predicate">A function to test each element for a condition.</param>
@@ -615,19 +436,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously computes the sum of a sequence of values.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values to calculate the sum of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
 		/// <returns>
@@ -646,19 +454,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously computes the sum of a sequence of values.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values to calculate the sum of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
 		/// <returns>
@@ -679,19 +474,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously computes the sum of the sequence of values that is obtained by invoking a projection function on
 		///     each element of the input sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values of type <typeparamref name="TSource" />.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -721,19 +503,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously computes the sum of the sequence of values that is obtained by invoking a projection function on
 		///     each element of the input sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values of type <typeparamref name="TSource" />.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -762,19 +531,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously computes the sum of a sequence of values.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values to calculate the sum of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
 		/// <returns>
@@ -793,19 +549,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously computes the sum of a sequence of values.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values to calculate the sum of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
 		/// <returns>
@@ -825,19 +568,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously computes the sum of the sequence of values that is obtained by invoking a projection function on
 		///     each element of the input sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values of type <typeparamref name="TSource" />.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -866,19 +596,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously computes the sum of the sequence of values that is obtained by invoking a projection function on
 		///     each element of the input sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values of type <typeparamref name="TSource" />.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -907,19 +624,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously computes the sum of a sequence of values.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values to calculate the sum of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
 		/// <returns>
@@ -938,19 +642,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously computes the sum of a sequence of values.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values to calculate the sum of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
 		/// <returns>
@@ -970,19 +661,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously computes the sum of the sequence of values that is obtained by invoking a projection function on
 		///     each element of the input sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values of type <typeparamref name="TSource" />.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -1012,19 +690,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously computes the sum of the sequence of values that is obtained by invoking a projection function on
 		///     each element of the input sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values of type <typeparamref name="TSource" />.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -1053,19 +718,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously computes the sum of a sequence of values.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values to calculate the sum of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
 		/// <returns>
@@ -1084,19 +736,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously computes the sum of a sequence of values.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values to calculate the sum of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
 		/// <returns>
@@ -1116,19 +755,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously computes the sum of the sequence of values that is obtained by invoking a projection function on
 		///     each element of the input sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values of type <typeparamref name="TSource" />.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -1158,19 +784,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously computes the sum of the sequence of values that is obtained by invoking a projection function on
 		///     each element of the input sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values of type <typeparamref name="TSource" />.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -1199,19 +812,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously computes the sum of a sequence of values.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values to calculate the sum of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
 		/// <returns>
@@ -1230,19 +830,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously computes the sum of a sequence of values.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values to calculate the sum of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
 		/// <returns>
@@ -1262,19 +849,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously computes the sum of the sequence of values that is obtained by invoking a projection function on
 		///     each element of the input sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values of type <typeparamref name="TSource" />.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -1304,19 +878,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously computes the sum of the sequence of values that is obtained by invoking a projection function on
 		///     each element of the input sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values of type <typeparamref name="TSource" />.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -1349,19 +910,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously computes the average of a sequence of values.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values to calculate the average of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
 		/// <returns>
@@ -1382,19 +930,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously computes the average of a sequence of values.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values to calculate the average of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
 		/// <returns>
@@ -1415,19 +950,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously computes the average of a sequence of values that is obtained
 		///     by invoking a projection function on each element of the input sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">A sequence of values of type <typeparamref name="TSource" />.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
@@ -1459,19 +981,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously computes the average of a sequence of values that is obtained
 		///     by invoking a projection function on each element of the input sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">A sequence of values of type <typeparamref name="TSource" />.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
@@ -1501,19 +1010,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously computes the average of a sequence of values.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values to calculate the average of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
 		/// <returns>
@@ -1533,19 +1029,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously computes the average of a sequence of values.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values to calculate the average of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
 		/// <returns>
@@ -1565,19 +1048,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously computes the average of a sequence of values that is obtained
 		///     by invoking a projection function on each element of the input sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">A sequence of values of type <typeparamref name="TSource" />.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
@@ -1609,19 +1079,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously computes the average of a sequence of values that is obtained
 		///     by invoking a projection function on each element of the input sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">A sequence of values of type <typeparamref name="TSource" />.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
@@ -1651,19 +1108,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously computes the average of a sequence of values.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values to calculate the average of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
 		/// <returns>
@@ -1683,19 +1127,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously computes the average of a sequence of values.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values to calculate the average of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
 		/// <returns>
@@ -1715,19 +1146,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously computes the average of a sequence of values that is obtained
 		///     by invoking a projection function on each element of the input sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">A sequence of values of type <typeparamref name="TSource" />.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
@@ -1759,19 +1177,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously computes the average of a sequence of values that is obtained
 		///     by invoking a projection function on each element of the input sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">A sequence of values of type <typeparamref name="TSource" />.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
@@ -1801,19 +1206,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously computes the average of a sequence of values.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values to calculate the average of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
 		/// <returns>
@@ -1834,19 +1226,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously computes the average of a sequence of values.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values to calculate the average of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
 		/// <returns>
@@ -1867,19 +1246,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously computes the average of a sequence of values that is obtained
 		///     by invoking a projection function on each element of the input sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">A sequence of values of type <typeparamref name="TSource" />.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
@@ -1911,19 +1277,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously computes the average of a sequence of values that is obtained
 		///     by invoking a projection function on each element of the input sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">A sequence of values of type <typeparamref name="TSource" />.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
@@ -1953,19 +1306,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously computes the average of a sequence of values.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values to calculate the average of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
 		/// <returns>
@@ -1985,19 +1325,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously computes the average of a sequence of values.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <param name="source">A sequence of values to calculate the average of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
 		/// <returns>
@@ -2018,19 +1345,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously computes the average of a sequence of values that is obtained
 		///     by invoking a projection function on each element of the input sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">A sequence of values of type <typeparamref name="TSource" />.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
@@ -2062,19 +1376,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously computes the average of a sequence of values that is obtained
 		///     by invoking a projection function on each element of the input sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">A sequence of values of type <typeparamref name="TSource" />.</param>
 		/// <param name="selector">A projection function to apply to each element.</param>
@@ -2108,19 +1409,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously returns the minimum value of a sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}" /> that contains the elements to determine the minimum of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -2141,19 +1429,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously invokes a projection function on each element of a sequence and returns the minimum resulting value.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <typeparam name="TResult">
 		///     The type of the value returned by the function represented by <paramref name="selector" />.
@@ -2190,19 +1465,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously returns the maximum value of a sequence.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}" /> that contains the elements to determine the maximum of.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -2223,19 +1485,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously invokes a projection function on each element of a sequence and returns the maximum resulting value.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <typeparam name="TResult">
 		///     The type of the value returned by the function represented by <paramref name="selector" />.
@@ -2273,19 +1522,6 @@ namespace LiteDB.Queryable
 		///     Asynchronously creates a <see cref="List{T}" /> from an <see cref="IQueryable{T}" /> by enumerating it
 		///     asynchronously.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}" /> to create a list from.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -2311,19 +1547,6 @@ namespace LiteDB.Queryable
 		/// <summary>
 		///     Asynchronously creates an array from an <see cref="IQueryable{T}" /> by enumerating it asynchronously.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}" /> to create an array from.</param>
 		/// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe while waiting for the task to complete.</param>
@@ -2346,22 +1569,8 @@ namespace LiteDB.Queryable
 
 		/// <summary>
 		///     Creates a <see cref="Dictionary{TKey, TValue}" /> from an <see cref="IQueryable{T}" /> by enumerating it
-		///     asynchronously
-		///     according to a specified key selector function.
+		///     asynchronously according to a specified key selector function.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" />.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}" /> to create a <see cref="Dictionary{TKey, TValue}" /> from.</param>
@@ -2386,22 +1595,8 @@ namespace LiteDB.Queryable
 
 		/// <summary>
 		///     Creates a <see cref="Dictionary{TKey, TValue}" /> from an <see cref="IQueryable{T}" /> by enumerating it
-		///     asynchronously
-		///     according to a specified key selector function and a comparer.
+		///     asynchronously according to a specified key selector function and a comparer.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" />.</typeparam>
 		/// <param name="source">An <see cref="IQueryable{T}" /> to create a <see cref="Dictionary{TKey, TValue}" /> from.</param>
@@ -2428,22 +1623,8 @@ namespace LiteDB.Queryable
 
 		/// <summary>
 		///     Creates a <see cref="Dictionary{TKey, TValue}" /> from an <see cref="IQueryable{T}" /> by enumerating it
-		///     asynchronously
-		///     according to a specified key selector and an element selector function.
+		///     asynchronously according to a specified key selector and an element selector function.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" />.</typeparam>
 		/// <typeparam name="TElement">The type of the value returned by <paramref name="elementSelector" />.</typeparam>
@@ -2473,22 +1654,8 @@ namespace LiteDB.Queryable
 
 		/// <summary>
 		///     Creates a <see cref="Dictionary{TKey, TValue}" /> from an <see cref="IQueryable{T}" /> by enumerating it
-		///     asynchronously
-		///     according to a specified key selector function, a comparer, and an element selector function.
+		///     asynchronously according to a specified key selector function, a comparer, and an element selector function.
 		/// </summary>
-		/// <remarks>
-		///     <para>
-		///         Multiple active operations on the same context instance are not supported. Use <see langword="await" /> to
-		///         ensure
-		///         that any asynchronous operations have completed before calling another method on this context.
-		///         See <see href="https://aka.ms/efcore-docs-threading">Avoiding DbContext threading issues</see> for more
-		///         information and examples.
-		///     </para>
-		///     <para>
-		///         See <see href="https://aka.ms/efcore-docs-async-linq">Querying data with EF Core</see> for more information and
-		///         examples.
-		///     </para>
-		/// </remarks>
 		/// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
 		/// <typeparam name="TKey">The type of the key returned by <paramref name="keySelector" />.</typeparam>
 		/// <typeparam name="TElement">The type of the value returned by <paramref name="elementSelector" />.</typeparam>
