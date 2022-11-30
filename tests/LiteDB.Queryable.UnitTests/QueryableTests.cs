@@ -488,7 +488,6 @@ namespace LiteDB.Queryable.UnitTests
 		}
 
 		[Test]
-		[Ignore("Ignore until Select() is implemented.")]
 		public void ShouldExecuteSumWithoutSelector()
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();
@@ -512,7 +511,6 @@ namespace LiteDB.Queryable.UnitTests
 		}
 
 		[Test]
-		[Ignore("Ignore until Select() is implemented.")]
 		public void ShouldExecuteAverageWithoutSelector()
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();
@@ -536,7 +534,6 @@ namespace LiteDB.Queryable.UnitTests
 		}
 
 		[Test]
-		[Ignore("Ignore until Select() is implemented.")]
 		public void ShouldExecuteMinWithoutSelector()
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();
@@ -549,7 +546,6 @@ namespace LiteDB.Queryable.UnitTests
 		}
 
 		[Test]
-		[Ignore("Ignore until Select() is implemented.")]
 		public void ShouldExecuteMinWithoutSelect()
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();
@@ -572,7 +568,6 @@ namespace LiteDB.Queryable.UnitTests
 		}
 
 		[Test]
-		[Ignore("Ignore until Select() is implemented.")]
 		public void ShouldExecuteMaxWithoutSelector()
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();
@@ -585,7 +580,6 @@ namespace LiteDB.Queryable.UnitTests
 		}
 
 		[Test]
-		[Ignore("Ignore until Select() is implemented.")]
 		public void ShouldExecuteMaxWithoutSelect()
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();

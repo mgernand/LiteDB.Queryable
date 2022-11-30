@@ -492,7 +492,6 @@ namespace LiteDB.Queryable.UnitTests
 		}
 
 		[Test]
-		[Ignore("Ignore until Select() is implemented.")]
 		public async Task ShouldExecuteSumWithoutSelectorAsync()
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();
@@ -516,7 +515,6 @@ namespace LiteDB.Queryable.UnitTests
 		}
 
 		[Test]
-		[Ignore("Ignore until Select() is implemented.")]
 		public async Task ShouldExecuteAverageWithoutSelectorAsync()
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();
@@ -540,7 +538,6 @@ namespace LiteDB.Queryable.UnitTests
 		}
 
 		[Test]
-		[Ignore("Ignore until Select() is implemented.")]
 		public async Task ShouldExecuteMinWithoutSelectorAsync()
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();
@@ -553,7 +550,6 @@ namespace LiteDB.Queryable.UnitTests
 		}
 
 		[Test]
-		[Ignore("Ignore until Select() is implemented.")]
 		public async Task ShouldExecuteMinWithoutSelectAsync()
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();
@@ -576,7 +572,6 @@ namespace LiteDB.Queryable.UnitTests
 		}
 
 		[Test]
-		[Ignore("Ignore until Select() is implemented.")]
 		public async Task ShouldExecuteMaxWithoutSelectorAsync()
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();
@@ -589,7 +584,6 @@ namespace LiteDB.Queryable.UnitTests
 		}
 
 		[Test]
-		[Ignore("Ignore until Select() is implemented.")]
 		public async Task ShouldExecuteMaxWithoutSelectAsync()
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();
