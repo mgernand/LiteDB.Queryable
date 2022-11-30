@@ -25,11 +25,11 @@ namespace LiteDB.Queryable
 		private static readonly List<MethodInfo> AverageMethods = typeof(Queryable).GetRuntimeMethods().Where(m => m.Name == "Average").ToList();
 		private static readonly List<MethodInfo> AverageAsyncMethods = typeof(AsyncEnumerable).GetRuntimeMethods().Where(m => m.Name == "AverageAsync").ToList();
 
-		private static readonly List<MethodInfo> GenericMinMethods = typeof(Queryable).GetRuntimeMethods().Where(m => m.Name == "Min" && m.IsGenericMethod).ToList();
-		private static readonly List<MethodInfo> GenericMinAsyncMethods = typeof(AsyncEnumerable).GetRuntimeMethods().Where(m => m.Name == "MinAsync" && m.IsGenericMethod).ToList();
+		private static readonly List<MethodInfo> MinMethods = typeof(Queryable).GetRuntimeMethods().Where(m => m.Name == "Min").ToList();
+		private static readonly List<MethodInfo> MinAsyncMethods = typeof(AsyncEnumerable).GetRuntimeMethods().Where(m => m.Name == "MinAsync").ToList();
 
-		private static readonly List<MethodInfo> GenericMaxMethods = typeof(Queryable).GetRuntimeMethods().Where(m => m.Name == "Max" && m.IsGenericMethod).ToList();
-		private static readonly List<MethodInfo> GenericMaxAsyncMethods = typeof(AsyncEnumerable).GetRuntimeMethods().Where(m => m.Name == "MaxAsync" && m.IsGenericMethod).ToList();
+		private static readonly List<MethodInfo> MaxMethods = typeof(Queryable).GetRuntimeMethods().Where(m => m.Name == "Max").ToList();
+		private static readonly List<MethodInfo> MaxAsyncMethods = typeof(AsyncEnumerable).GetRuntimeMethods().Where(m => m.Name == "MaxAsync").ToList();
 
 		private static readonly MethodInfo GenericSelectMethod = typeof(ILiteQueryable<T>).GetRuntimeMethods().Single(m => m.Name == "Select" && m.IsGenericMethod);
 		private static readonly MethodInfo GenericSelectAsyncMethod = typeof(ILiteQueryableAsync<T>).GetRuntimeMethods().Single(m => m.Name == "Select" && m.IsGenericMethod);
@@ -378,49 +378,96 @@ namespace LiteDB.Queryable
 		{
 			MinFinder minFinder = new MinFinder();
 			LambdaExpression selector = minFinder.GetMinExpression(expression);
+			bool isSelectorApplied = selector is not null;
 
 			TResult result;
 
 			if(isAsync)
 			{
-				MethodInfo genericMinAsyncMethod = GenericMinAsyncMethods
-					.Where(x =>
-					{
-						Type parameterType = x.GetParameters()[1].ParameterType;
-						return parameterType.Name == "Func`2" && parameterType.GetGenericArguments()[1] == selector.ReturnType;
-					})
-					.Single();
+				object valueTask;
 
-				object valueTask = genericMinAsyncMethod
-					.MakeGenericMethod(typeof(T))
-					.Invoke(null, new object[]
-					{
-						this.queryableAsync.ToEnumerableAsync().AsAsyncEnumerable(),
-						selector.Compile(),
-						default(CancellationToken)
-					});
+				if(isSelectorApplied)
+				{
+					MethodInfo minAsyncMethod = MinAsyncMethods
+						.Where(x => x.IsGenericMethod)
+						.Where(x =>
+						{
+							Type parameterType = x.GetParameters()[1].ParameterType;
+							return parameterType.Name == "Func`2" && parameterType.GetGenericArguments()[1] == selector.ReturnType;
+						})
+						.Single();
+
+					valueTask = minAsyncMethod
+						.MakeGenericMethod(typeof(T))
+						.Invoke(null, new object[]
+						{
+							this.queryableAsync.ToEnumerableAsync().AsAsyncEnumerable(),
+							selector.Compile(),
+							default(CancellationToken)
+						});
+				}
+				else
+				{
+					Type genericArgumentType = this.selectedQueryableAsync.GetType().GetGenericArguments().Single();
+
+					MethodInfo minAsyncMethod = MinAsyncMethods
+						.Where(x => !x.IsGenericMethod)
+						.Where(x => x.GetParameters().Length == 2)
+						.Where(x =>
+						{
+							Type funcType = x.GetParameters()[0].ParameterType;
+							Type valueType = funcType.GetGenericArguments()[0];
+
+							return valueType == genericArgumentType;
+						})
+						.Single();
+
+					valueTask = minAsyncMethod
+						.Invoke(null, new object[]
+						{
+							this.GetSelectEnumerableAsyncInstance(),
+							default(CancellationToken)
+						});
+				}
 
 				MethodInfo asTaskMethod = GetAsTaskMethodFor<TResult>();
 				result = (TResult)asTaskMethod.Invoke(valueTask, Array.Empty<object>());
 			}
 			else
 			{
-				MethodInfo genericMinMethod = GenericMinMethods
-					.Where(x =>
-					{
-						Type parameterType = x.GetParameters().LastOrDefault()?.ParameterType;
-						return parameterType?.Name == "Expression`1";
-					})
-					.Single();
+				if(isSelectorApplied)
+				{
+					MethodInfo minMethod = MinMethods
+						.Where(x => x.IsGenericMethod)
+						.Where(x =>
+						{
+							Type parameterType = x.GetParameters().LastOrDefault()?.ParameterType;
+							return parameterType?.Name == "Expression`1";
+						})
+						.Single();
 
 
-				result = (TResult)genericMinMethod
-					.MakeGenericMethod(typeof(T), typeof(TResult))
-					.Invoke(null, new object[]
-					{
-						this.queryable.ToEnumerable().AsQueryable(),
-						selector
-					});
+					result = (TResult)minMethod
+						.MakeGenericMethod(typeof(T), typeof(TResult))
+						.Invoke(null, new object[]
+						{
+							this.queryable.ToEnumerable().AsQueryable(),
+							selector
+						});
+				}
+				else
+				{
+					MethodInfo minMethod = MinMethods
+						.Where(x => x.GetParameters().Length == 1)
+						.Single();
+
+					result = (TResult)minMethod
+						.MakeGenericMethod(typeof(TResult))
+						.Invoke(null, new object[]
+						{
+							this.GetSelectEnumerableInstance()
+						});
+				}
 			}
 
 			return result;
@@ -430,49 +477,94 @@ namespace LiteDB.Queryable
 		{
 			MaxFinder maxFinder = new MaxFinder();
 			LambdaExpression selector = maxFinder.GetMaxExpression(expression);
+			bool isSelectorApplied = selector is not null;
 
 			TResult result;
 
 			if(isAsync)
 			{
-				MethodInfo genericMaxAsyncMethod = GenericMaxAsyncMethods
-					.Where(x =>
-					{
-						Type parameterType = x.GetParameters()[1].ParameterType;
-						return parameterType.Name == "Func`2" && parameterType.GetGenericArguments()[1] == selector.ReturnType;
-					})
-					.Single();
+				object valueTask;
 
-				object valueTask = genericMaxAsyncMethod
-					.MakeGenericMethod(typeof(T))
-					.Invoke(null, new object[]
-					{
-						this.queryableAsync.ToEnumerableAsync().AsAsyncEnumerable(),
-						selector.Compile(),
-						default(CancellationToken)
-					});
+				if(isSelectorApplied)
+				{
+					MethodInfo maxAsyncMethod = MaxAsyncMethods
+						.Where(x =>
+						{
+							Type parameterType = x.GetParameters()[1].ParameterType;
+							return parameterType.Name == "Func`2" && parameterType.GetGenericArguments()[1] == selector.ReturnType;
+						})
+						.Single();
+
+					valueTask = maxAsyncMethod
+						.MakeGenericMethod(typeof(T))
+						.Invoke(null, new object[]
+						{
+							this.queryableAsync.ToEnumerableAsync().AsAsyncEnumerable(),
+							selector.Compile(),
+							default(CancellationToken)
+						});
+				}
+				else
+				{
+					Type genericArgumentType = this.selectedQueryableAsync.GetType().GetGenericArguments().Single();
+
+					MethodInfo maxAsyncMethod = MaxAsyncMethods
+						.Where(x => !x.IsGenericMethod)
+						.Where(x => x.GetParameters().Length == 2)
+						.Where(x =>
+						{
+							Type funcType = x.GetParameters()[0].ParameterType;
+							Type valueType = funcType.GetGenericArguments()[0];
+
+							return valueType == genericArgumentType;
+						})
+						.Single();
+
+					valueTask = maxAsyncMethod
+						.Invoke(null, new object[]
+						{
+							this.GetSelectEnumerableAsyncInstance(),
+							default(CancellationToken)
+						});
+				}
 
 				MethodInfo asTaskMethod = GetAsTaskMethodFor<TResult>();
 				result = (TResult)asTaskMethod.Invoke(valueTask, Array.Empty<object>());
 			}
 			else
 			{
-				MethodInfo genericMaxMethod = GenericMaxMethods
-					.Where(x =>
-					{
-						Type parameterType = x.GetParameters().LastOrDefault()?.ParameterType;
-						return parameterType?.Name == "Expression`1";
-					})
-					.Single();
+				if(isSelectorApplied)
+				{
+					MethodInfo maxMethod = MaxMethods
+						.Where(x =>
+						{
+							Type parameterType = x.GetParameters().LastOrDefault()?.ParameterType;
+							return parameterType?.Name == "Expression`1";
+						})
+						.Single();
 
 
-				result = (TResult)genericMaxMethod
-					.MakeGenericMethod(typeof(T), typeof(TResult))
-					.Invoke(null, new object[]
-					{
-						this.queryable.ToEnumerable().AsQueryable(),
-						selector
-					});
+					result = (TResult)maxMethod
+						.MakeGenericMethod(typeof(T), typeof(TResult))
+						.Invoke(null, new object[]
+						{
+							this.queryable.ToEnumerable().AsQueryable(),
+							selector
+						});
+				}
+				else
+				{
+					MethodInfo maxMethod = MaxMethods
+						.Where(x => x.GetParameters().Length == 1)
+						.Single();
+
+					result = (TResult)maxMethod
+						.MakeGenericMethod(typeof(TResult))
+						.Invoke(null, new object[]
+						{
+							this.GetSelectEnumerableInstance()
+						});
+				}
 			}
 
 			return result;
