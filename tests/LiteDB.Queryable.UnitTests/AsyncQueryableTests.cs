@@ -294,7 +294,8 @@ namespace LiteDB.Queryable.UnitTests
 				.Where(x => x.Name == "Sabrina")
 				.FirstAsync();
 
-			await action.Should().ThrowAsync<InvalidOperationException>();
+			//await action.Should().ThrowAsync<InvalidOperationException>();
+			await action.Should().ThrowAsync<LiteAsyncException>();
 		}
 
 		[Test]
@@ -370,7 +371,8 @@ namespace LiteDB.Queryable.UnitTests
 				.Where(x => x.Name == "Thomas")
 				.SingleAsync();
 
-			await action.Should().ThrowAsync<InvalidOperationException>();
+			//await action.Should().ThrowAsync<InvalidOperationException>();
+			await action.Should().ThrowAsync<LiteAsyncException>();
 		}
 
 		[Test]
@@ -414,7 +416,8 @@ namespace LiteDB.Queryable.UnitTests
 				.Where(x => x.Name == "Thomas")
 				.SingleOrDefaultAsync();
 
-			await action.Should().ThrowAsync<InvalidOperationException>();
+			//await action.Should().ThrowAsync<InvalidOperationException>();
+			await action.Should().ThrowAsync<LiteAsyncException>();
 		}
 
 		[Test]
