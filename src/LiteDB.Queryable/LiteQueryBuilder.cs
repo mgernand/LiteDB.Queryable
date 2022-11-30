@@ -1,5 +1,7 @@
 ﻿// ReSharper disable StaticMemberInGenericType
 
+// ReSharper disable ReplaceWithSingleCallToSingle
+
 namespace LiteDB.Queryable
 {
 	using System;
@@ -17,8 +19,8 @@ namespace LiteDB.Queryable
 		private static readonly Dictionary<Type, MethodInfo> GenericAsTaskMethods = new Dictionary<Type, MethodInfo>();
 		private static readonly MethodInfo GenericGetExpressionMethod = typeof(BsonMapper).GetRuntimeMethods().Single(m => m.Name == "GetExpression" && m.IsGenericMethod);
 
-		private static readonly Dictionary<Type, MethodInfo> GenericSumMethods = typeof(Queryable).GetRuntimeMethods().Where(m => m.Name == "Sum" && m.IsGenericMethod).ToDictionary(x => x.ReturnType, x => x);
-		private static readonly Dictionary<Type, MethodInfo> GenericSumAsyncMethods = typeof(AsyncEnumerable).GetRuntimeMethods().Where(m => m.Name == "SumAsync" && m.IsGenericMethod).ToDictionary(x => x.ReturnType.GetGenericArguments()[0], x => x);
+		private static readonly List<MethodInfo> SumMethods = typeof(Queryable).GetRuntimeMethods().Where(m => m.Name == "Sum").ToList();
+		private static readonly List<MethodInfo> SumAsyncMethods = typeof(AsyncEnumerable).GetRuntimeMethods().Where(m => m.Name == "SumAsync").ToList();
 
 		private static readonly List<MethodInfo> AverageMethods = typeof(Queryable).GetRuntimeMethods().Where(m => m.Name == "Average").ToList();
 		private static readonly List<MethodInfo> AverageAsyncMethods = typeof(AsyncEnumerable).GetRuntimeMethods().Where(m => m.Name == "AverageAsync").ToList();
@@ -176,70 +178,81 @@ namespace LiteDB.Queryable
 		{
 			SumFinder sumFinder = new SumFinder();
 			LambdaExpression selector = sumFinder.GetSumExpression(expression);
+			bool isSelectorApplied = selector is not null;
 
 			TResult result;
 
 			if(isAsync)
 			{
-				MethodInfo genericSumAsyncMethod = GenericSumAsyncMethods[selector.ReturnType];
-				object valueTask = genericSumAsyncMethod
-					.MakeGenericMethod(typeof(T))
-					.Invoke(null, new object[]
-					{
-						this.queryableAsync.ToEnumerableAsync().AsAsyncEnumerable(),
-						selector.Compile(),
-						default(CancellationToken)
-					});
+				object valueTask;
 
+				if(isSelectorApplied)
+				{
+					MethodInfo sumAsyncMethod = SumAsyncMethods
+						.Where(x => x.IsGenericMethod)
+						.Where(x => x.ReturnType.GetGenericArguments()[0] == typeof(TResult).GetGenericArguments()[0])
+						.Single();
+
+					valueTask = sumAsyncMethod
+						.MakeGenericMethod(typeof(T))
+						.Invoke(null, new object[]
+						{
+							this.queryableAsync.ToEnumerableAsync().AsAsyncEnumerable(),
+							selector.Compile(),
+							default(CancellationToken)
+						});
+				}
+				else
+				{
+					MethodInfo sumAsyncMethod = SumAsyncMethods
+						.Where(x => !x.IsGenericMethod)
+						.Where(x => x.ReturnType.GetGenericArguments()[0] == typeof(TResult).GetGenericArguments()[0])
+						.Single();
+
+					valueTask = sumAsyncMethod
+						.Invoke(null, new object[]
+						{
+							this.GetSelectEnumerableAsyncInstance(),
+							default(CancellationToken)
+						});
+				}
 
 				MethodInfo asTaskMethod = GetAsTaskMethodFor<TResult>();
 				result = (TResult)asTaskMethod.Invoke(valueTask, Array.Empty<object>());
 			}
 			else
 			{
-				MethodInfo genericSumMethod = GenericSumMethods[selector.ReturnType];
-				result = (TResult)genericSumMethod
-					.MakeGenericMethod(typeof(T))
-					.Invoke(null, new object[]
-					{
-						this.queryable.ToEnumerable().AsQueryable(),
-						selector
-					});
+				if(isSelectorApplied)
+				{
+					MethodInfo sumAsyncMethod = SumMethods
+						.Where(x => x.IsGenericMethod)
+						.Where(x => x.ReturnType == typeof(TResult))
+						.Single();
+
+					result = (TResult)sumAsyncMethod
+						.MakeGenericMethod(typeof(T))
+						.Invoke(null, new object[]
+						{
+							this.queryable.ToEnumerable().AsQueryable(),
+							selector
+						});
+				}
+				else
+				{
+					MethodInfo sumAsyncMethod = SumMethods
+						.Where(x => !x.IsGenericMethod)
+						.Where(x => x.ReturnType == typeof(TResult))
+						.Single();
+
+					result = (TResult)sumAsyncMethod
+						.Invoke(null, new object[]
+						{
+							this.GetSelectEnumerableInstance()
+						});
+				}
 			}
 
 			return result;
-		}
-
-		private object GetSelectEnumerableAsyncInstance()
-		{
-			Type genericArgumentType = this.selectedQueryableAsync.GetType().GetGenericArguments().Single();
-			MethodInfo toEnumerableAsyncMethod = typeof(ILiteQueryableAsyncResult<>).MakeGenericType(genericArgumentType).GetRuntimeMethods().Single(m => m.Name == "ToEnumerableAsync");
-			object enumerable = toEnumerableAsyncMethod.Invoke(this.selectedQueryableAsync, Array.Empty<object>());
-
-			enumerable = GenericAsAsyncEnumerableMethod
-				.MakeGenericMethod(genericArgumentType)
-				.Invoke(null, new[]
-				{
-					enumerable
-				});
-
-			return enumerable;
-		}
-
-		private object GetSelectEnumerableInstance()
-		{
-			Type genericArgumentType = this.selectedQueryable.GetType().GetGenericArguments().Single();
-			MethodInfo toEnumerableMethod = typeof(ILiteQueryableResult<>).MakeGenericType(genericArgumentType).GetRuntimeMethods().Single(m => m.Name == "ToEnumerable");
-			object enumerable = toEnumerableMethod.Invoke(this.selectedQueryable, Array.Empty<object>());
-
-			enumerable = GenericAsQueryableMethod
-				.MakeGenericMethod(genericArgumentType)
-				.Invoke(null, new[]
-				{
-					enumerable
-				});
-
-			return enumerable;
 		}
 
 		private TResult GetAverageResult<TResult>(Expression expression, bool isAsync)
@@ -654,16 +667,40 @@ namespace LiteDB.Queryable
 
 			foreach(LambdaExpression selectExpression in selectExpressions)
 			{
-				//MethodInfo genericGetExpressionMethod = typeof(BsonMapper).GetRuntimeMethods().Single(m => m.Name == "GetExpression" && m.IsGenericMethod);
-				//BsonExpression bsonExpression = (BsonExpression)genericGetExpressionMethod
-				//	.MakeGenericMethod(typeof(T), selectExpression.ReturnType)
-				//	.Invoke(BsonMapper.Global, new object[]
-				//	{
-				//		selectExpression
-				//	});
-
 				yield return selectExpression;
 			}
+		}
+
+		private object GetSelectEnumerableAsyncInstance()
+		{
+			Type genericArgumentType = this.selectedQueryableAsync.GetType().GetGenericArguments().Single();
+			MethodInfo toEnumerableAsyncMethod = typeof(ILiteQueryableAsyncResult<>).MakeGenericType(genericArgumentType).GetRuntimeMethods().Single(m => m.Name == "ToEnumerableAsync");
+			object enumerable = toEnumerableAsyncMethod.Invoke(this.selectedQueryableAsync, Array.Empty<object>());
+
+			enumerable = GenericAsAsyncEnumerableMethod
+				.MakeGenericMethod(genericArgumentType)
+				.Invoke(null, new[]
+				{
+					enumerable
+				});
+
+			return enumerable;
+		}
+
+		private object GetSelectEnumerableInstance()
+		{
+			Type genericArgumentType = this.selectedQueryable.GetType().GetGenericArguments().Single();
+			MethodInfo toEnumerableMethod = typeof(ILiteQueryableResult<>).MakeGenericType(genericArgumentType).GetRuntimeMethods().Single(m => m.Name == "ToEnumerable");
+			object enumerable = toEnumerableMethod.Invoke(this.selectedQueryable, Array.Empty<object>());
+
+			enumerable = GenericAsQueryableMethod
+				.MakeGenericMethod(genericArgumentType)
+				.Invoke(null, new[]
+				{
+					enumerable
+				});
+
+			return enumerable;
 		}
 
 		private static MethodInfo GetAsTaskMethodFor<TResult>()
