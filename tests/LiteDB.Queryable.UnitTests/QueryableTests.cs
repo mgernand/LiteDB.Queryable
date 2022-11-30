@@ -13,6 +13,7 @@ namespace LiteDB.Queryable.UnitTests
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Linq;
+	using System.Threading.Tasks;
 	using FluentAssertions;
 
 	[TestFixture]
@@ -69,6 +70,24 @@ namespace LiteDB.Queryable.UnitTests
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();
 			queryable.Should().NotBeNull();
+		}
+
+		[Test]
+		public async Task ShouldExecuteRootToListAsync()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			List<Person> result = await queryable.ToListAsync();
+
+			result.Should().HaveCount(5);
+		}
+
+		[Test]
+		public async Task ShouldExecuteRootToArrayAsync()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			Person[] result = await queryable.ToArrayAsync();
+
+			result.Should().HaveCount(5);
 		}
 
 		[Test]

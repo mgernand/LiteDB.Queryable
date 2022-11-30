@@ -40,7 +40,7 @@
 			return queryable;
 		}
 
-		internal static async IAsyncEnumerable<T> ToAsyncEnumerable<T>(this Task<IEnumerable<T>> task)
+		internal static async IAsyncEnumerable<T> AsAsyncEnumerable<T>(this Task<IEnumerable<T>> task)
 		{
 			foreach(T item in await task)
 			{
