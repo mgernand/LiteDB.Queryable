@@ -40,6 +40,7 @@ namespace LiteDB.Queryable
 		private ILiteQueryable<T> queryable;
 		private ILiteQueryableAsync<T> queryableAsync;
 
+		private bool isSelectApplied;
 		private object selectedQueryable;
 		private object selectedQueryableAsync;
 
@@ -424,7 +425,7 @@ namespace LiteDB.Queryable
 						})
 						.Single();
 
-					if(this.selectedQueryableAsync is null)
+					if(!this.isSelectApplied)
 					{
 						minAsyncMethod = minAsyncMethod
 							.MakeGenericMethod(resultType);
@@ -530,7 +531,7 @@ namespace LiteDB.Queryable
 						})
 						.Single();
 
-					if(this.selectedQueryableAsync is null)
+					if(!this.isSelectApplied)
 					{
 						maxAsyncMethod = maxAsyncMethod
 							.MakeGenericMethod(resultType);
@@ -722,6 +723,7 @@ namespace LiteDB.Queryable
 						});
 				}
 
+				this.isSelectApplied = true;
 				selectCounter++;
 			}
 		}
