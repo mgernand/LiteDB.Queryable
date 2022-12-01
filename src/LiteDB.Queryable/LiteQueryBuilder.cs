@@ -34,6 +34,9 @@ namespace LiteDB.Queryable
 		private static readonly MethodInfo GenericSelectMethod = typeof(ILiteQueryable<T>).GetRuntimeMethods().Single(m => m.Name == "Select" && m.IsGenericMethod);
 		private static readonly MethodInfo GenericSelectAsyncMethod = typeof(ILiteQueryableAsync<T>).GetRuntimeMethods().Single(m => m.Name == "Select" && m.IsGenericMethod);
 
+		private static readonly MethodInfo GenericIncludeMethod = typeof(ILiteQueryable<T>).GetRuntimeMethods().Single(m => m.Name == "Include" && m.IsGenericMethod);
+		private static readonly MethodInfo GenericIncludeAsyncMethod = typeof(ILiteQueryableAsync<T>).GetRuntimeMethods().Single(m => m.Name == "Include" && m.IsGenericMethod);
+
 		private static readonly MethodInfo GenericAsQueryableMethod = typeof(Queryable).GetRuntimeMethods().Single(m => m.Name == "AsQueryable" && m.IsGenericMethod);
 		private static readonly MethodInfo GenericAsAsyncEnumerableMethod = typeof(QueryableExtensions).GetRuntimeMethods().Single(m => m.Name == "AsAsyncEnumerable" && m.IsGenericMethod);
 
@@ -95,6 +98,9 @@ namespace LiteDB.Queryable
 
 			// Apply 'Take' value to query.
 			this.ApplyTake(expression, isAsync);
+
+			// Apply 'Include' expression(s) to query.
+			this.ApplyInclude(expression, isAsync);
 
 			// Apply 'Select' expression(s) to query.
 			this.ApplySelect(expression, isAsync);
@@ -720,6 +726,33 @@ namespace LiteDB.Queryable
 			}
 		}
 
+		private void ApplyInclude(Expression expression, bool isAsync)
+		{
+			foreach(LambdaExpression includeExpression in EnumerateIncludeExpressions(expression))
+			{
+				Type returnType = includeExpression.ReturnType;
+
+				if(isAsync)
+				{
+					this.queryableAsync = (ILiteQueryableAsync<T>)GenericIncludeAsyncMethod
+						.MakeGenericMethod(returnType)
+						.Invoke(this.queryableAsync, new object[]
+						{
+							includeExpression
+						});
+				}
+				else
+				{
+					this.queryable = (ILiteQueryable<T>)GenericIncludeMethod
+						.MakeGenericMethod(returnType)
+						.Invoke(this.queryable, new object[]
+						{
+							includeExpression
+						});
+				}
+			}
+		}
+
 		private void ApplySelect(Expression expression, bool isAsync)
 		{
 			int selectCounter = 0;
@@ -730,10 +763,10 @@ namespace LiteDB.Queryable
 					throw new NotSupportedException("Multiple Select is not supported.");
 				}
 
+				Type returnType = selectExpression.ReturnType;
+
 				if(isAsync)
 				{
-					Type returnType = selectExpression.ReturnType;
-
 					this.selectedQueryableAsync = GenericSelectAsyncMethod
 						.MakeGenericMethod(returnType)
 						.Invoke(this.queryableAsync, new object[]
@@ -743,8 +776,6 @@ namespace LiteDB.Queryable
 				}
 				else
 				{
-					Type returnType = selectExpression.ReturnType;
-
 					this.selectedQueryable = GenericSelectMethod
 						.MakeGenericMethod(returnType)
 						.Invoke(this.queryable, new object[]
@@ -797,6 +828,17 @@ namespace LiteDB.Queryable
 					});
 
 				yield return (bsonExpression, orderByExpression.IsDescending, true);
+			}
+		}
+
+		private static IEnumerable<LambdaExpression> EnumerateIncludeExpressions(Expression expression)
+		{
+			IncludeFinder includeFinder = new IncludeFinder();
+			IList<LambdaExpression> includeExpressions = includeFinder.GetIncludeExpressions(expression);
+
+			foreach(LambdaExpression includeExpression in includeExpressions)
+			{
+				yield return includeExpression;
 			}
 		}
 
