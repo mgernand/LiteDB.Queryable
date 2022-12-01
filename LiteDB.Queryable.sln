@@ -17,10 +17,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LiteDB.Queryable", "src\Lit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LiteDB.Queryable.UnitTests", "tests\LiteDB.Queryable.UnitTests\LiteDB.Queryable.UnitTests.csproj", "{2BE77190-6AF3-407D-96A3-8B663BF484B8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{65DE7DF3-74AB-4947-B18F-94B0DC783177}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleApp", "samples\SampleApp\SampleApp.csproj", "{40E15C70-5098-44F7-BA5A-7398486A86B7}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,10 +31,6 @@ Global
 		{2BE77190-6AF3-407D-96A3-8B663BF484B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2BE77190-6AF3-407D-96A3-8B663BF484B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2BE77190-6AF3-407D-96A3-8B663BF484B8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{40E15C70-5098-44F7-BA5A-7398486A86B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{40E15C70-5098-44F7-BA5A-7398486A86B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{40E15C70-5098-44F7-BA5A-7398486A86B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{40E15C70-5098-44F7-BA5A-7398486A86B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,7 +38,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{A135863C-9607-424E-8205-0EF49A532F50} = {22C8D0D0-6BB8-42F3-A98E-52EF2A47BD90}
 		{2BE77190-6AF3-407D-96A3-8B663BF484B8} = {732EB21F-E8DA-46BC-81D7-FF61EDBFF847}
-		{40E15C70-5098-44F7-BA5A-7398486A86B7} = {65DE7DF3-74AB-4947-B18F-94B0DC783177}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {57909EB3-C1A0-4001-90B1-715555C2CC5E}
