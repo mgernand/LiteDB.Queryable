@@ -21,43 +21,61 @@ namespace LiteDB.Queryable.UnitTests
 	public class AsyncQueryableTests
 	{
 		private LiteDatabaseAsync database;
-		private ILiteCollectionAsync<Person> collection;
+		private ILiteCollectionAsync<Person> peopleCollection;
+		private ILiteCollectionAsync<Company> companiesCollection;
+
+		[OneTimeSetUp]
+		public void SetUpFixture()
+		{
+			BsonMapper.Global.Entity<Company>()
+				.DbRef(x => x.Owner, "people");
+		}
 
 		[SetUp]
 		public async Task Setup()
 		{
 			this.database = new LiteDatabaseAsync("test.db");
-			this.collection = this.database.GetCollection<Person>();
+			this.peopleCollection = this.database.GetCollection<Person>("people");
+			this.companiesCollection = this.database.GetCollection<Company>("companies");
 
-			await this.collection.InsertAsync(new Person
+			await this.peopleCollection.InsertAsync(new Person
 			{
 				Name = "Thomas",
 				Age = 30,
 				Height = 170
 			});
-			await this.collection.InsertAsync(new Person
+			await this.peopleCollection.InsertAsync(new Person
 			{
 				Name = "Benjamin",
 				Age = 25,
 				Height = 170
 			});
-			await this.collection.InsertAsync(new Person
+			await this.peopleCollection.InsertAsync(new Person
 			{
 				Name = "Thomas",
 				Age = 27,
 				Height = 200
 			});
-			await this.collection.InsertAsync(new Person
+			await this.peopleCollection.InsertAsync(new Person
 			{
 				Name = "Albert",
 				Age = 27,
 				Height = 180
 			});
-			await this.collection.InsertAsync(new Person
+			await this.peopleCollection.InsertAsync(new Person
 			{
 				Name = "Tim",
 				Age = 40,
 				Height = 160
+			});
+
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+			Person owner = await queryable.SingleAsync(x => x.Name == "Tim");
+
+			await this.companiesCollection.InsertAsync(new Company
+			{
+				Name = "ACME Inc.",
+				Owner = owner
 			});
 		}
 
@@ -66,7 +84,7 @@ namespace LiteDB.Queryable.UnitTests
 		{
 			this.database?.Dispose();
 			this.database = null;
-			this.collection = null;
+			this.peopleCollection = null;
 
 			File.Delete("test.db");
 		}
@@ -74,14 +92,14 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldCreateQueryable()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			queryable.Should().NotBeNull();
 		}
 
 		[Test]
 		public void ShouldExecuteRootToListOnAsyncCollection()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			List<Person> result = queryable.ToList();
 
 			result.Should().HaveCount(5);
@@ -90,7 +108,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteRootToArrayOnAsyncCollection()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person[] result = queryable.ToArray();
 
 			result.Should().HaveCount(5);
@@ -99,7 +117,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteRootToListAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			List<Person> result = await queryable.ToListAsync();
 
 			result.Should().HaveCount(5);
@@ -108,7 +126,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteRootToArrayAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person[] result = await queryable.ToArrayAsync();
 
 			result.Should().HaveCount(5);
@@ -117,7 +135,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteRootToDictionaryAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Dictionary<string, string> result = await queryable.ToDictionaryAsync(x => x.Id.ToString(), x => x.Name);
 
 			result.Values.Should().HaveCount(5);
@@ -126,7 +144,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteWhereAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			List<Person> result = await queryable
 				.Where(x => x.Name == "Thomas")
 				.ToListAsync();
@@ -137,7 +155,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteMultipleWhereAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			List<Person> result = await queryable
 				.Where(x => x.Name == "Thomas")
 				.Where(x => x.Age == 30)
@@ -149,7 +167,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteOrderByAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			List<Person> result = await queryable
 				.OrderBy(x => x.Age)
 				.ToListAsync();
@@ -160,7 +178,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteOrderByDescendingAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			List<Person> result = await queryable
 				.OrderByDescending(x => x.Age)
 				.ToListAsync();
@@ -171,7 +189,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldThrowForMultipleOrderByAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 
 			Func<Task> action = async () => await queryable
 				.OrderBy(x => x.Age)
@@ -184,7 +202,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldThrowForMultipleOrderByDescendingAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 
 			Func<Task> action = async () => await queryable
 				.OrderByDescending(x => x.Age)
@@ -197,7 +215,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldThrowForThenByAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 
 			Func<Task> action = async () => await queryable
 				.OrderBy(x => x.Age)
@@ -210,7 +228,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldThrowForThenByDescendingAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 
 			Func<Task> action = async () => await queryable
 				.OrderBy(x => x.Age)
@@ -223,7 +241,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteWithSkipAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			List<Person> result = await queryable
 				.Skip(1)
 				.ToListAsync();
@@ -235,7 +253,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteWithTakeAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			List<Person> result = await queryable
 				.Take(4)
 				.ToListAsync();
@@ -248,7 +266,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteWithSkipTakeAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			List<Person> result = await queryable
 				.Take(2)
 				.Skip(2)
@@ -262,7 +280,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteFirstAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = await queryable.FirstAsync();
 
 			result.Should().NotBeNull();
@@ -272,7 +290,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteWhereFirstAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = await queryable
 				.Where(x => x.Name == "Albert")
 				.FirstAsync();
@@ -284,7 +302,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteWhereInsideFirstAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = await queryable.FirstAsync(x => x.Name == "Albert");
 
 			result.Should().NotBeNull();
@@ -294,7 +312,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldThrowOnEmptyResultFirstAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Func<Task> action = async () => await queryable
 				.Where(x => x.Name == "Sabrina")
 				.FirstAsync();
@@ -306,7 +324,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteFirstOrDefaultAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = await queryable.FirstOrDefaultAsync();
 
 			result.Should().NotBeNull();
@@ -316,7 +334,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteWhereFirstOrDefaultAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = await queryable
 				.Where(x => x.Name == "Albert")
 				.FirstOrDefaultAsync();
@@ -328,7 +346,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteWhereInsideFirstOrDefaultAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = await queryable.FirstOrDefaultAsync(x => x.Name == "Albert");
 
 			result.Should().NotBeNull();
@@ -338,7 +356,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldNotThrowOnEmptyResultFirstOrDefaultAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = await queryable
 				.Where(x => x.Name == "Sabrina")
 				.FirstOrDefaultAsync();
@@ -349,7 +367,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteSingleAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = await queryable
 				.Where(x => x.Name == "Albert")
 				.SingleAsync();
@@ -361,7 +379,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteWhereInsideSingleAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = await queryable.SingleAsync(x => x.Name == "Albert");
 
 			result.Should().NotBeNull();
@@ -371,7 +389,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldThrowOnEmptyResultSingleAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Func<Task> action = async () => await queryable
 				.Where(x => x.Name == "Thomas")
 				.SingleAsync();
@@ -383,7 +401,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteSingleOrDefaultAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = await queryable
 				.Where(x => x.Name == "Albert")
 				.SingleOrDefaultAsync();
@@ -395,7 +413,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteWhereInsideSingleOrDefaultAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = await queryable.SingleOrDefaultAsync(x => x.Name == "Albert");
 
 			result.Should().NotBeNull();
@@ -405,7 +423,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldNotThrowOnEmptyResultSingleOrDefaultAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = await queryable
 				.Where(x => x.Name == "Heinz")
 				.SingleOrDefaultAsync();
@@ -416,7 +434,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldThrowOnMultipleResultSingleOrDefaultAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Func<Task> action = async () => await queryable
 				.Where(x => x.Name == "Thomas")
 				.SingleOrDefaultAsync();
@@ -428,7 +446,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteCountAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			int result = await queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.CountAsync();
@@ -439,7 +457,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteWhereInsideCountAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			int result = await queryable.CountAsync(x => x.Name.StartsWith("T"));
 
 			result.Should().Be(3);
@@ -448,7 +466,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteLongCountAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			long result = await queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.LongCountAsync();
@@ -459,7 +477,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteWhereInsideLongCountAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			long result = await queryable.LongCountAsync(x => x.Name.StartsWith("T"));
 
 			result.Should().Be(3);
@@ -468,7 +486,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteAnyAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			bool result = await queryable
 				.Where(x => x.Name == "Albert")
 				.AnyAsync();
@@ -479,7 +497,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteWhereInsideAnyAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			bool result = await queryable.AnyAsync(x => x.Name == "Albert");
 
 			result.Should().BeTrue();
@@ -488,7 +506,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteSumWithSelectorAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			int result = await queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.SumAsync(x => x.Age);
@@ -499,7 +517,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteSumWithoutSelectorAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			int result = await queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.Select(x => x.Age)
@@ -511,7 +529,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteAverageWithSelectorAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			double result = await queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.AverageAsync(x => x.Age);
@@ -522,7 +540,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteAverageWithoutSelectorAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			double result = await queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.Select(x => x.Age)
@@ -534,7 +552,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteMinWithSelectorAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			int result = await queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.MinAsync(x => x.Age);
@@ -545,7 +563,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteMinWithoutSelectorAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			int result = await queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.Select(x => x.Age)
@@ -557,7 +575,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteMinWithoutSelectAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = await queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.MinAsync();
@@ -570,7 +588,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteMaxWithSelectorAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			int result = await queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.MaxAsync(x => x.Age);
@@ -581,7 +599,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteMaxWithoutSelectorAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			int result = await queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.Select(x => x.Age)
@@ -593,7 +611,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteMaxWithoutSelectAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = await queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.MaxAsync();
@@ -601,6 +619,19 @@ namespace LiteDB.Queryable.UnitTests
 			result.Should().NotBeNull();
 			result.Name.Should().Be("Tim");
 			result.Age.Should().Be(40);
+		}
+
+		[Test]
+		public async Task ShouldIncludeReferencedEntityAsync()
+		{
+			IQueryable<Company> queryable = this.companiesCollection.AsQueryable();
+			Company result = await queryable
+				.Include(x => x.Owner)
+				.FirstAsync(x => x.Name.StartsWith("ACME"));
+
+			result.Should().NotBeNull();
+			result.Owner.Should().NotBeNull();
+			result.Owner.Name.Should().NotBeNullOrWhiteSpace().And.Subject.Should().Be("Tim");
 		}
 	}
 }

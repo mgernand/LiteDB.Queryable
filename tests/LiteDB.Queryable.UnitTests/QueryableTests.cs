@@ -19,41 +19,62 @@ namespace LiteDB.Queryable.UnitTests
 	[TestFixture]
 	public class QueryableTests
 	{
+		private LiteDatabase database;
+		private ILiteCollection<Person> peopleCollection;
+		private ILiteCollection<Company> companiesCollection;
+
+		[OneTimeSetUp]
+		public void SetUpFixture()
+		{
+			BsonMapper.Global.Entity<Company>()
+				.DbRef(x => x.Owner, "people");
+		}
+
 		[SetUp]
 		public void Setup()
 		{
 			this.database = new LiteDatabase("test.db");
-			this.collection = this.database.GetCollection<Person>();
+			this.peopleCollection = this.database.GetCollection<Person>("people");
+			this.companiesCollection = this.database.GetCollection<Company>("companies");
 
-			this.collection.Insert(new Person
+			this.peopleCollection.Insert(new Person
 			{
 				Name = "Thomas",
 				Age = 30,
 				Height = 170
 			});
-			this.collection.Insert(new Person
+			this.peopleCollection.Insert(new Person
 			{
 				Name = "Benjamin",
 				Age = 25,
 				Height = 170
 			});
-			this.collection.Insert(new Person
+			this.peopleCollection.Insert(new Person
 			{
 				Name = "Thomas",
 				Age = 27,
 				Height = 200
 			});
-			this.collection.Insert(new Person
+			this.peopleCollection.Insert(new Person
 			{
 				Name = "Albert",
 				Age = 27,
 				Height = 180
 			});
-			this.collection.Insert(new Person
+			this.peopleCollection.Insert(new Person
 			{
 				Name = "Tim",
 				Age = 40,
 				Height = 160
+			});
+
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+			Person owner = queryable.Single(x => x.Name == "Tim");
+
+			this.companiesCollection.Insert(new Company
+			{
+				Name = "ACME Inc.",
+				Owner = owner
 			});
 		}
 
@@ -62,25 +83,22 @@ namespace LiteDB.Queryable.UnitTests
 		{
 			this.database?.Dispose();
 			this.database = null;
-			this.collection = null;
+			this.peopleCollection = null;
 
 			File.Delete("test.db");
 		}
 
-		private LiteDatabase database;
-		private ILiteCollection<Person> collection;
-
 		[Test]
 		public void ShouldCreateQueryable()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			queryable.Should().NotBeNull();
 		}
 
 		[Test]
 		public void ShouldExecuteAny()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			bool result = queryable
 				.Where(x => x.Name == "Albert")
 				.Any();
@@ -91,7 +109,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteAverageWithoutSelector()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			double result = queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.Select(x => x.Age)
@@ -103,7 +121,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteAverageWithSelector()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			double result = queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.Average(x => x.Age);
@@ -114,7 +132,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteCount()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			int result = queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.Count();
@@ -125,7 +143,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteFirst()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = queryable.First();
 
 			result.Should().NotBeNull();
@@ -135,7 +153,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteFirstOrDefault()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = queryable.FirstOrDefault();
 
 			result.Should().NotBeNull();
@@ -145,7 +163,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteLongCount()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			long result = queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.LongCount();
@@ -156,7 +174,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteMaxWithoutSelect()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.Max();
@@ -169,7 +187,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteMaxWithoutSelectWithComparer()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.Max(new HeightComparer());
@@ -182,7 +200,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteMaxWithoutSelector()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			int result = queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.Select(x => x.Age)
@@ -194,7 +212,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteMaxWithSelector()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			int result = queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.Max(x => x.Age);
@@ -205,7 +223,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteMinWithoutSelect()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.Min();
@@ -218,7 +236,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteMinWithoutSelectWithComparer()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.Min(new HeightComparer());
@@ -231,7 +249,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteMinWithoutSelector()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			int result = queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.Select(x => x.Age)
@@ -243,7 +261,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteMinWithSelector()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			int result = queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.Min(x => x.Age);
@@ -254,7 +272,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteMultipleWhere()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			List<Person> result = queryable
 				.Where(x => x.Name == "Thomas")
 				.Where(x => x.Age == 30)
@@ -266,7 +284,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteOrderBy()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			List<Person> result = queryable
 				.OrderBy(x => x.Age)
 				.ToList();
@@ -277,7 +295,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteOrderByDescending()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			List<Person> result = queryable
 				.OrderByDescending(x => x.Age)
 				.ToList();
@@ -288,7 +306,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteRootToArray()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person[] result = queryable.ToArray();
 
 			result.Should().HaveCount(5);
@@ -297,7 +315,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteRootToArrayAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person[] result = await queryable.ToArrayAsync();
 
 			result.Should().HaveCount(5);
@@ -306,7 +324,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteRootToDictionary()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Dictionary<string, string> result = queryable.ToDictionary(x => x.Id.ToString(), x => x.Name);
 
 			result.Values.Should().HaveCount(5);
@@ -315,7 +333,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteRootToList()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			List<Person> result = queryable.ToList();
 
 			result.Should().HaveCount(5);
@@ -324,7 +342,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public async Task ShouldExecuteRootToListAsync()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			List<Person> result = await queryable.ToListAsync();
 
 			result.Should().HaveCount(5);
@@ -333,7 +351,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteSingle()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = queryable
 				.Where(x => x.Name == "Albert")
 				.Single();
@@ -345,7 +363,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteSingleOrDefault()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = queryable
 				.Where(x => x.Name == "Albert")
 				.SingleOrDefault();
@@ -357,7 +375,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteSumWithoutSelector()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			int result = queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.Select(x => x.Age)
@@ -369,7 +387,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteSumWithSelector()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			int result = queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.Sum(x => x.Age);
@@ -380,7 +398,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteWhere()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			List<Person> result = queryable
 				.Where(x => x.Name == "Thomas")
 				.ToList();
@@ -391,7 +409,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteWhereFirst()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = queryable
 				.Where(x => x.Name == "Albert")
 				.First();
@@ -403,7 +421,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteWhereFirstOrDefault()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = queryable
 				.Where(x => x.Name == "Albert")
 				.FirstOrDefault();
@@ -415,7 +433,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteWhereInsideAny()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			bool result = queryable.Any(x => x.Name == "Albert");
 
 			result.Should().BeTrue();
@@ -424,7 +442,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteWhereInsideCount()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			int result = queryable.Count(x => x.Name.StartsWith("T"));
 
 			result.Should().Be(3);
@@ -433,7 +451,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteWhereInsideFirst()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = queryable.First(x => x.Name == "Albert");
 
 			result.Should().NotBeNull();
@@ -443,7 +461,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteWhereInsideFirstOrDefault()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = queryable.FirstOrDefault(x => x.Name == "Albert");
 
 			result.Should().NotBeNull();
@@ -453,7 +471,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteWhereInsideLongCount()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			long result = queryable.LongCount(x => x.Name.StartsWith("T"));
 
 			result.Should().Be(3);
@@ -462,7 +480,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteWhereInsideSingle()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = queryable.Single(x => x.Name == "Albert");
 
 			result.Should().NotBeNull();
@@ -472,7 +490,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteWhereInsideSingleOrDefault()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = queryable.SingleOrDefault(x => x.Name == "Albert");
 
 			result.Should().NotBeNull();
@@ -482,7 +500,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteWithSkip()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			List<Person> result = queryable
 				.Skip(1)
 				.ToList();
@@ -494,7 +512,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteWithSkipTake()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			List<Person> result = queryable
 				.Take(2)
 				.Skip(2)
@@ -508,7 +526,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldExecuteWithTake()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			List<Person> result = queryable
 				.Take(4)
 				.ToList();
@@ -521,7 +539,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldNotThrowOnEmptyResultFirstOrDefault()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = queryable
 				.Where(x => x.Name == "Sabrina")
 				.FirstOrDefault();
@@ -532,7 +550,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldNotThrowOnEmptyResultSingleOrDefault()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person result = queryable
 				.Where(x => x.Name == "Heinz")
 				.SingleOrDefault();
@@ -543,7 +561,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldThrowForMultipleOrderBy()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 
 			Action action = () => queryable
 				.OrderBy(x => x.Age)
@@ -556,7 +574,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldThrowForMultipleOrderByDescending()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 
 			Action action = () => queryable
 				.OrderByDescending(x => x.Age)
@@ -569,7 +587,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldThrowForThenBy()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 
 			Action action = () => queryable
 				.OrderBy(x => x.Age)
@@ -582,7 +600,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldThrowForThenByDescending()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 
 			Action action = () => queryable
 				.OrderBy(x => x.Age)
@@ -595,7 +613,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldThrowOnEmptyResultFirst()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Action action = () => queryable
 				.Where(x => x.Name == "Sabrina")
 				.First();
@@ -606,7 +624,7 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldThrowOnEmptyResultSingle()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Action action = () => queryable
 				.Where(x => x.Name == "Thomas")
 				.Single();
@@ -617,12 +635,25 @@ namespace LiteDB.Queryable.UnitTests
 		[Test]
 		public void ShouldThrowOnMultipleResultSingleOrDefault()
 		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Action action = () => queryable
 				.Where(x => x.Name == "Thomas")
 				.SingleOrDefault();
 
 			action.Should().Throw<InvalidOperationException>();
+		}
+
+		[Test]
+		public void ShouldIncludeReferencedEntity()
+		{
+			IQueryable<Company> queryable = this.companiesCollection.AsQueryable();
+			Company result = queryable
+				.Include(x => x.Owner)
+				.First(x => x.Name.StartsWith("ACME"));
+
+			result.Should().NotBeNull();
+			result.Owner.Should().NotBeNull();
+			result.Owner.Name.Should().NotBeNullOrWhiteSpace().And.Subject.Should().Be("Tim");
 		}
 	}
 }
