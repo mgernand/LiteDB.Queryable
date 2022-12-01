@@ -13,6 +13,12 @@
 			return isNullable;
 		}
 
+		public static bool IsComparer(this Type type)
+		{
+			bool isComparer = type.Name is "IComparer" or "IComparer`1";
+			return isComparer;
+		}
+
 		public static Type GetSequenceType(this Type type)
 		{
 			Type sequenceType = type.TryGetSequenceType();

@@ -378,7 +378,9 @@ namespace LiteDB.Queryable
 		private TResult GetMinResult<TResult>(Expression expression, bool isAsync)
 		{
 			MinFinder minFinder = new MinFinder();
-			LambdaExpression selector = minFinder.GetMinExpression(expression);
+			MinResult minResult = minFinder.GetMinExpression(expression);
+			LambdaExpression selector = minResult.Selector;
+			object comparer = minResult.Comparer;
 			bool isSelectorApplied = selector is not null;
 
 			TResult result;
@@ -467,15 +469,28 @@ namespace LiteDB.Queryable
 				else
 				{
 					MethodInfo minMethod = MinMethods
-						.Where(x => x.GetParameters().Length == 1)
+						.Where(x =>
+						{
+							ParameterInfo[] parameterInfos = x.GetParameters();
+							return comparer is null
+								? parameterInfos.Length == 1
+								: parameterInfos.Length == 2 && parameterInfos.Last().ParameterType.IsComparer();
+						})
 						.Single();
+
+					IList<object> parameters = new List<object>
+					{
+						this.GetSelectEnumerableInstance() ?? this.GetEnumerableInstance()
+					};
+
+					if(comparer is not null)
+					{
+						parameters.Add(comparer);
+					}
 
 					result = (TResult)minMethod
 						.MakeGenericMethod(typeof(TResult))
-						.Invoke(null, new object[]
-						{
-							this.GetSelectEnumerableInstance() ?? this.GetEnumerableInstance()
-						});
+						.Invoke(null, parameters.ToArray());
 				}
 			}
 
@@ -485,7 +500,9 @@ namespace LiteDB.Queryable
 		private TResult GetMaxResult<TResult>(Expression expression, bool isAsync)
 		{
 			MaxFinder maxFinder = new MaxFinder();
-			LambdaExpression selector = maxFinder.GetMaxExpression(expression);
+			MaxResult maxResult = maxFinder.GetMaxExpression(expression);
+			LambdaExpression selector = maxResult.Selector;
+			object comparer = maxResult.Comparer;
 			bool isSelectorApplied = selector is not null;
 
 			TResult result;
@@ -572,15 +589,28 @@ namespace LiteDB.Queryable
 				else
 				{
 					MethodInfo maxMethod = MaxMethods
-						.Where(x => x.GetParameters().Length == 1)
+						.Where(x =>
+						{
+							ParameterInfo[] parameterInfos = x.GetParameters();
+							return comparer is null
+								? parameterInfos.Length == 1
+								: parameterInfos.Length == 2 && parameterInfos.Last().ParameterType.IsComparer();
+						})
 						.Single();
+
+					IList<object> parameters = new List<object>
+					{
+						this.GetSelectEnumerableInstance() ?? this.GetEnumerableInstance()
+					};
+
+					if(comparer is not null)
+					{
+						parameters.Add(comparer);
+					}
 
 					result = (TResult)maxMethod
 						.MakeGenericMethod(typeof(TResult))
-						.Invoke(null, new object[]
-						{
-							this.GetSelectEnumerableInstance() ?? this.GetEnumerableInstance()
-						});
+						.Invoke(null, parameters.ToArray());
 				}
 			}
 

@@ -4,12 +4,17 @@
 
 	internal sealed class MinFinder : ExpressionVisitor
 	{
-		private LambdaExpression sumExpression;
+		private LambdaExpression minExpression;
+		private object comparer;
 
-		public LambdaExpression GetMinExpression(Expression expression)
+		public MinResult GetMinExpression(Expression expression)
 		{
 			this.Visit(expression);
-			return this.sumExpression;
+			return new MinResult
+			{
+				Selector = this.minExpression,
+				Comparer = this.comparer
+			};
 		}
 
 		/// <inheritdoc />
@@ -19,9 +24,17 @@
 			{
 				if(node.Arguments.Count == 2)
 				{
-					UnaryExpression expression = (UnaryExpression)node.Arguments[1];
-					LambdaExpression lambdaExpression = (LambdaExpression)expression.Operand;
-					this.sumExpression = lambdaExpression;
+					Expression argument = node.Arguments[1];
+
+					if(argument is UnaryExpression expression)
+					{
+						LambdaExpression lambdaExpression = (LambdaExpression)expression.Operand;
+						this.minExpression = lambdaExpression;
+					}
+					else if(argument is ConstantExpression constantExpression)
+					{
+						this.comparer = constantExpression.Value;
+					}
 				}
 			}
 
