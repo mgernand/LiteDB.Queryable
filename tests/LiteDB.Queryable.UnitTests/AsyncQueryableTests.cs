@@ -32,27 +32,32 @@ namespace LiteDB.Queryable.UnitTests
 			await this.collection.InsertAsync(new Person
 			{
 				Name = "Thomas",
-				Age = 30
+				Age = 30,
+				Height = 170
 			});
 			await this.collection.InsertAsync(new Person
 			{
 				Name = "Benjamin",
-				Age = 25
+				Age = 25,
+				Height = 170
 			});
 			await this.collection.InsertAsync(new Person
 			{
 				Name = "Thomas",
-				Age = 27
+				Age = 27,
+				Height = 200
 			});
 			await this.collection.InsertAsync(new Person
 			{
 				Name = "Albert",
-				Age = 27
+				Age = 27,
+				Height = 180
 			});
 			await this.collection.InsertAsync(new Person
 			{
 				Name = "Tim",
-				Age = 40
+				Age = 40,
+				Height = 160
 			});
 		}
 
@@ -557,7 +562,9 @@ namespace LiteDB.Queryable.UnitTests
 				.Where(x => x.Name.StartsWith("T"))
 				.MinAsync();
 
-			result.Should().Be(null);
+			result.Should().NotBeNull();
+			result.Name.Should().Be("Thomas");
+			result.Age.Should().Be(27);
 		}
 
 		[Test]
@@ -591,7 +598,9 @@ namespace LiteDB.Queryable.UnitTests
 				.Where(x => x.Name.StartsWith("T"))
 				.MaxAsync();
 
-			result.Should().Be(null);
+			result.Should().NotBeNull();
+			result.Name.Should().Be("Tim");
+			result.Age.Should().Be(40);
 		}
 	}
 }

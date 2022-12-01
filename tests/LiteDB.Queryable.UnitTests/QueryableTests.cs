@@ -19,39 +19,41 @@ namespace LiteDB.Queryable.UnitTests
 	[TestFixture]
 	public class QueryableTests
 	{
-		private LiteDatabase database;
-		private ILiteCollection<Person> collection;
-
 		[SetUp]
 		public void Setup()
-        {
+		{
 			this.database = new LiteDatabase("test.db");
 			this.collection = this.database.GetCollection<Person>();
 
 			this.collection.Insert(new Person
 			{
 				Name = "Thomas",
-				Age = 30
+				Age = 30,
+				Height = 170
 			});
 			this.collection.Insert(new Person
 			{
 				Name = "Benjamin",
-				Age = 25
+				Age = 25,
+				Height = 170
 			});
 			this.collection.Insert(new Person
 			{
 				Name = "Thomas",
-				Age = 27
+				Age = 27,
+				Height = 200
 			});
 			this.collection.Insert(new Person
 			{
 				Name = "Albert",
-				Age = 27
+				Age = 27,
+				Height = 180
 			});
 			this.collection.Insert(new Person
 			{
 				Name = "Tim",
-				Age = 40
+				Age = 40,
+				Height = 160
 			});
 		}
 
@@ -65,6 +67,9 @@ namespace LiteDB.Queryable.UnitTests
 			File.Delete("test.db");
 		}
 
+		private LiteDatabase database;
+		private ILiteCollection<Person> collection;
+
 		[Test]
 		public void ShouldCreateQueryable()
 		{
@@ -73,59 +78,177 @@ namespace LiteDB.Queryable.UnitTests
 		}
 
 		[Test]
-		public async Task ShouldExecuteRootToListAsync()
+		public void ShouldExecuteAny()
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();
-			List<Person> result = await queryable.ToListAsync();
+			bool result = queryable
+				.Where(x => x.Name == "Albert")
+				.Any();
 
-			result.Should().HaveCount(5);
+			result.Should().BeTrue();
 		}
 
 		[Test]
-		public async Task ShouldExecuteRootToArrayAsync()
+		public void ShouldExecuteAverageWithoutSelector()
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();
-			Person[] result = await queryable.ToArrayAsync();
+			double result = queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.Select(x => x.Age)
+				.Average();
 
-			result.Should().HaveCount(5);
+			result.Should().Be(97 / 3.0);
 		}
 
 		[Test]
-		public void ShouldExecuteRootToList()
+		public void ShouldExecuteAverageWithSelector()
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();
-			List<Person> result = queryable.ToList();
+			double result = queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.Average(x => x.Age);
 
-			result.Should().HaveCount(5);
+			result.Should().Be(97 / 3.0);
 		}
 
 		[Test]
-		public void ShouldExecuteRootToArray()
+		public void ShouldExecuteCount()
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();
-			Person[] result = queryable.ToArray();
+			int result = queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.Count();
 
-			result.Should().HaveCount(5);
+			result.Should().Be(3);
 		}
 
 		[Test]
-		public void ShouldExecuteRootToDictionary()
+		public void ShouldExecuteFirst()
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();
-			Dictionary<string, string> result = queryable.ToDictionary(x => x.Id.ToString(), x => x.Name);
+			Person result = queryable.First();
 
-			result.Values.Should().HaveCount(5);
+			result.Should().NotBeNull();
+			result.Name.Should().Be("Thomas");
 		}
 
 		[Test]
-		public void ShouldExecuteWhere()
+		public void ShouldExecuteFirstOrDefault()
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();
-			List<Person> result = queryable
-				.Where(x => x.Name == "Thomas")
-				.ToList();
+			Person result = queryable.FirstOrDefault();
 
-			result.Should().HaveCount(2);
+			result.Should().NotBeNull();
+			result.Name.Should().Be("Thomas");
+		}
+
+		[Test]
+		public void ShouldExecuteLongCount()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			long result = queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.LongCount();
+
+			result.Should().Be(3);
+		}
+
+		[Test]
+		public void ShouldExecuteMaxWithoutSelect()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			Person result = queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.Max();
+
+			result.Should().NotBeNull();
+			result.Name.Should().Be("Tim");
+			result.Age.Should().Be(40);
+		}
+
+		[Test]
+		public void ShouldExecuteMaxWithoutSelectWithComparer()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			Person result = queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.Max(new HeightComparer());
+
+			result.Should().NotBeNull();
+			result.Name.Should().Be("Thomas");
+			result.Height.Should().Be(200);
+		}
+
+		[Test]
+		public void ShouldExecuteMaxWithoutSelector()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			int result = queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.Select(x => x.Age)
+				.Max();
+
+			result.Should().Be(40);
+		}
+
+		[Test]
+		public void ShouldExecuteMaxWithSelector()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			int result = queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.Max(x => x.Age);
+
+			result.Should().Be(40);
+		}
+
+		[Test]
+		public void ShouldExecuteMinWithoutSelect()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			Person result = queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.Min();
+
+			result.Should().NotBeNull();
+			result.Name.Should().Be("Thomas");
+			result.Age.Should().Be(27);
+		}
+
+		[Test]
+		public void ShouldExecuteMinWithoutSelectWithComparer()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			Person result = queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.Min(new HeightComparer());
+
+			result.Should().NotBeNull();
+			result.Name.Should().Be("Tim");
+			result.Height.Should().Be(160);
+		}
+
+		[Test]
+		public void ShouldExecuteMinWithoutSelector()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			int result = queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.Select(x => x.Age)
+				.Min();
+
+			result.Should().Be(27);
+		}
+
+		[Test]
+		public void ShouldExecuteMinWithSelector()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			int result = queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.Min(x => x.Age);
+
+			result.Should().Be(27);
 		}
 
 		[Test]
@@ -160,6 +283,261 @@ namespace LiteDB.Queryable.UnitTests
 				.ToList();
 
 			result.First().Name.Should().Be("Tim");
+		}
+
+		[Test]
+		public void ShouldExecuteRootToArray()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			Person[] result = queryable.ToArray();
+
+			result.Should().HaveCount(5);
+		}
+
+		[Test]
+		public async Task ShouldExecuteRootToArrayAsync()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			Person[] result = await queryable.ToArrayAsync();
+
+			result.Should().HaveCount(5);
+		}
+
+		[Test]
+		public void ShouldExecuteRootToDictionary()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			Dictionary<string, string> result = queryable.ToDictionary(x => x.Id.ToString(), x => x.Name);
+
+			result.Values.Should().HaveCount(5);
+		}
+
+		[Test]
+		public void ShouldExecuteRootToList()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			List<Person> result = queryable.ToList();
+
+			result.Should().HaveCount(5);
+		}
+
+		[Test]
+		public async Task ShouldExecuteRootToListAsync()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			List<Person> result = await queryable.ToListAsync();
+
+			result.Should().HaveCount(5);
+		}
+
+		[Test]
+		public void ShouldExecuteSingle()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			Person result = queryable
+				.Where(x => x.Name == "Albert")
+				.Single();
+
+			result.Should().NotBeNull();
+			result.Name.Should().Be("Albert");
+		}
+
+		[Test]
+		public void ShouldExecuteSingleOrDefault()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			Person result = queryable
+				.Where(x => x.Name == "Albert")
+				.SingleOrDefault();
+
+			result.Should().NotBeNull();
+			result.Name.Should().Be("Albert");
+		}
+
+		[Test]
+		public void ShouldExecuteSumWithoutSelector()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			int result = queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.Select(x => x.Age)
+				.Sum();
+
+			result.Should().Be(97);
+		}
+
+		[Test]
+		public void ShouldExecuteSumWithSelector()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			int result = queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.Sum(x => x.Age);
+
+			result.Should().Be(97);
+		}
+
+		[Test]
+		public void ShouldExecuteWhere()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			List<Person> result = queryable
+				.Where(x => x.Name == "Thomas")
+				.ToList();
+
+			result.Should().HaveCount(2);
+		}
+
+		[Test]
+		public void ShouldExecuteWhereFirst()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			Person result = queryable
+				.Where(x => x.Name == "Albert")
+				.First();
+
+			result.Should().NotBeNull();
+			result.Name.Should().Be("Albert");
+		}
+
+		[Test]
+		public void ShouldExecuteWhereFirstOrDefault()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			Person result = queryable
+				.Where(x => x.Name == "Albert")
+				.FirstOrDefault();
+
+			result.Should().NotBeNull();
+			result.Name.Should().Be("Albert");
+		}
+
+		[Test]
+		public void ShouldExecuteWhereInsideAny()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			bool result = queryable.Any(x => x.Name == "Albert");
+
+			result.Should().BeTrue();
+		}
+
+		[Test]
+		public void ShouldExecuteWhereInsideCount()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			int result = queryable.Count(x => x.Name.StartsWith("T"));
+
+			result.Should().Be(3);
+		}
+
+		[Test]
+		public void ShouldExecuteWhereInsideFirst()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			Person result = queryable.First(x => x.Name == "Albert");
+
+			result.Should().NotBeNull();
+			result.Name.Should().Be("Albert");
+		}
+
+		[Test]
+		public void ShouldExecuteWhereInsideFirstOrDefault()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			Person result = queryable.FirstOrDefault(x => x.Name == "Albert");
+
+			result.Should().NotBeNull();
+			result.Name.Should().Be("Albert");
+		}
+
+		[Test]
+		public void ShouldExecuteWhereInsideLongCount()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			long result = queryable.LongCount(x => x.Name.StartsWith("T"));
+
+			result.Should().Be(3);
+		}
+
+		[Test]
+		public void ShouldExecuteWhereInsideSingle()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			Person result = queryable.Single(x => x.Name == "Albert");
+
+			result.Should().NotBeNull();
+			result.Name.Should().Be("Albert");
+		}
+
+		[Test]
+		public void ShouldExecuteWhereInsideSingleOrDefault()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			Person result = queryable.SingleOrDefault(x => x.Name == "Albert");
+
+			result.Should().NotBeNull();
+			result.Name.Should().Be("Albert");
+		}
+
+		[Test]
+		public void ShouldExecuteWithSkip()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			List<Person> result = queryable
+				.Skip(1)
+				.ToList();
+
+			result.Should().HaveCount(4);
+			result.First().Name.Should().Be("Benjamin");
+		}
+
+		[Test]
+		public void ShouldExecuteWithSkipTake()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			List<Person> result = queryable
+				.Take(2)
+				.Skip(2)
+				.ToList();
+
+			result.Should().HaveCount(2);
+			result.First().Name.Should().Be("Thomas");
+			result.Last().Name.Should().Be("Albert");
+		}
+
+		[Test]
+		public void ShouldExecuteWithTake()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			List<Person> result = queryable
+				.Take(4)
+				.ToList();
+
+			result.Should().HaveCount(4);
+			result.First().Name.Should().Be("Thomas");
+			result.Last().Name.Should().Be("Albert");
+		}
+
+		[Test]
+		public void ShouldNotThrowOnEmptyResultFirstOrDefault()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			Person result = queryable
+				.Where(x => x.Name == "Sabrina")
+				.FirstOrDefault();
+
+			result.Should().BeNull();
+		}
+
+		[Test]
+		public void ShouldNotThrowOnEmptyResultSingleOrDefault()
+		{
+			IQueryable<Person> queryable = this.collection.AsQueryable();
+			Person result = queryable
+				.Where(x => x.Name == "Heinz")
+				.SingleOrDefault();
+
+			result.Should().BeNull();
 		}
 
 		[Test]
@@ -215,77 +593,6 @@ namespace LiteDB.Queryable.UnitTests
 		}
 
 		[Test]
-		public void ShouldExecuteWithSkip()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			List<Person> result = queryable
-				.Skip(1)
-				.ToList();
-
-			result.Should().HaveCount(4);
-			result.First().Name.Should().Be("Benjamin");
-		}
-
-		[Test]
-		public void ShouldExecuteWithTake()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			List<Person> result = queryable
-				.Take(4)
-				.ToList();
-
-			result.Should().HaveCount(4);
-			result.First().Name.Should().Be("Thomas");
-			result.Last().Name.Should().Be("Albert");
-		}
-
-		[Test]
-		public void ShouldExecuteWithSkipTake()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			List<Person> result = queryable
-				.Take(2)
-				.Skip(2)
-				.ToList();
-
-			result.Should().HaveCount(2);
-			result.First().Name.Should().Be("Thomas");
-			result.Last().Name.Should().Be("Albert");
-		}
-
-		[Test]
-		public void ShouldExecuteFirst()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			Person result = queryable.First();
-
-			result.Should().NotBeNull();
-			result.Name.Should().Be("Thomas");
-		}
-
-		[Test]
-		public void ShouldExecuteWhereFirst()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			Person result = queryable
-				.Where(x => x.Name == "Albert")
-				.First();
-
-			result.Should().NotBeNull();
-			result.Name.Should().Be("Albert");
-		}
-
-		[Test]
-		public void ShouldExecuteWhereInsideFirst()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			Person result = queryable.First(x => x.Name == "Albert");
-
-			result.Should().NotBeNull();
-			result.Name.Should().Be("Albert");
-		}
-
-		[Test]
 		public void ShouldThrowOnEmptyResultFirst()
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();
@@ -294,71 +601,6 @@ namespace LiteDB.Queryable.UnitTests
 				.First();
 
 			action.Should().Throw<InvalidOperationException>();
-		}
-
-		[Test]
-		public void ShouldExecuteFirstOrDefault()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			Person result = queryable.FirstOrDefault();
-
-			result.Should().NotBeNull();
-			result.Name.Should().Be("Thomas");
-		}
-
-		[Test]
-		public void ShouldExecuteWhereFirstOrDefault()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			Person result = queryable
-				.Where(x => x.Name == "Albert")
-				.FirstOrDefault();
-
-			result.Should().NotBeNull();
-			result.Name.Should().Be("Albert");
-		}
-
-		[Test]
-		public void ShouldExecuteWhereInsideFirstOrDefault()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			Person result = queryable.FirstOrDefault(x => x.Name == "Albert");
-
-			result.Should().NotBeNull();
-			result.Name.Should().Be("Albert");
-		}
-
-		[Test]
-		public void ShouldNotThrowOnEmptyResultFirstOrDefault()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			Person result = queryable
-				.Where(x => x.Name == "Sabrina")
-				.FirstOrDefault();
-
-			result.Should().BeNull();
-		}
-
-		[Test]
-		public void ShouldExecuteSingle()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			Person result = queryable
-				.Where(x => x.Name == "Albert")
-				.Single();
-
-			result.Should().NotBeNull();
-			result.Name.Should().Be("Albert");
-		}
-
-		[Test]
-		public void ShouldExecuteWhereInsideSingle()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			Person result = queryable.Single(x => x.Name == "Albert");
-
-			result.Should().NotBeNull();
-			result.Name.Should().Be("Albert");
 		}
 
 		[Test]
@@ -373,39 +615,6 @@ namespace LiteDB.Queryable.UnitTests
 		}
 
 		[Test]
-		public void ShouldExecuteSingleOrDefault()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			Person result = queryable
-				.Where(x => x.Name == "Albert")
-				.SingleOrDefault();
-
-			result.Should().NotBeNull();
-			result.Name.Should().Be("Albert");
-		}
-
-		[Test]
-		public void ShouldExecuteWhereInsideSingleOrDefault()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			Person result = queryable.SingleOrDefault(x => x.Name == "Albert");
-
-			result.Should().NotBeNull();
-			result.Name.Should().Be("Albert");
-		}
-
-		[Test]
-		public void ShouldNotThrowOnEmptyResultSingleOrDefault()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			Person result = queryable
-				.Where(x => x.Name == "Heinz")
-				.SingleOrDefault();
-
-			result.Should().BeNull();
-		}
-
-		[Test]
 		public void ShouldThrowOnMultipleResultSingleOrDefault()
 		{
 			IQueryable<Person> queryable = this.collection.AsQueryable();
@@ -414,180 +623,6 @@ namespace LiteDB.Queryable.UnitTests
 				.SingleOrDefault();
 
 			action.Should().Throw<InvalidOperationException>();
-		}
-
-		[Test]
-		public void ShouldExecuteCount()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			int result = queryable
-				.Where(x => x.Name.StartsWith("T"))
-				.Count();
-
-			result.Should().Be(3);
-		}
-
-		[Test]
-		public void ShouldExecuteWhereInsideCount()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			int result = queryable.Count(x => x.Name.StartsWith("T"));
-
-			result.Should().Be(3);
-		}
-
-		[Test]
-		public void ShouldExecuteLongCount()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			long result = queryable
-				.Where(x => x.Name.StartsWith("T"))
-				.LongCount();
-
-			result.Should().Be(3);
-		}
-
-		[Test]
-		public void ShouldExecuteWhereInsideLongCount()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			long result = queryable.LongCount(x => x.Name.StartsWith("T"));
-
-			result.Should().Be(3);
-		}
-
-		[Test]
-		public void ShouldExecuteAny()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			bool result = queryable
-				.Where(x => x.Name == "Albert")
-				.Any();
-
-			result.Should().BeTrue();
-		}
-
-		[Test]
-		public void ShouldExecuteWhereInsideAny()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			bool result = queryable.Any(x => x.Name == "Albert");
-
-			result.Should().BeTrue();
-		}
-
-		[Test]
-		public void ShouldExecuteSumWithSelector()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			int result = queryable
-				.Where(x => x.Name.StartsWith("T"))
-				.Sum(x => x.Age);
-
-			result.Should().Be(97);
-		}
-
-		[Test]
-		public void ShouldExecuteSumWithoutSelector()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			int result = queryable
-				.Where(x => x.Name.StartsWith("T"))
-				.Select(x => x.Age)
-				.Sum();
-
-			result.Should().Be(97);
-		}
-
-		[Test]
-		public void ShouldExecuteAverageWithSelector()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			double result = queryable
-				.Where(x => x.Name.StartsWith("T"))
-				.Average(x => x.Age);
-
-			result.Should().Be(97 / 3.0);
-		}
-
-		[Test]
-		public void ShouldExecuteAverageWithoutSelector()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			double result = queryable
-				.Where(x => x.Name.StartsWith("T"))
-				.Select(x => x.Age)
-				.Average();
-
-			result.Should().Be(97 / 3.0);
-		}
-
-		[Test]
-		public void ShouldExecuteMinWithSelector()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			int result = queryable
-				.Where(x => x.Name.StartsWith("T"))
-				.Min(x => x.Age);
-
-			result.Should().Be(27);
-		}
-
-		[Test]
-		public void ShouldExecuteMinWithoutSelector()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			int result = queryable
-				.Where(x => x.Name.StartsWith("T"))
-				.Select(x => x.Age)
-				.Min();
-
-			result.Should().Be(27);
-		}
-
-		[Test]
-		public void ShouldExecuteMinWithoutSelect()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			Person result = queryable
-				.Where(x => x.Name.StartsWith("T"))
-				.Min();
-
-			result.Should().Be(null);
-		}
-
-		[Test]
-		public void ShouldExecuteMaxWithSelector()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			int result = queryable
-				.Where(x => x.Name.StartsWith("T"))
-				.Max(x => x.Age);
-
-			result.Should().Be(40);
-		}
-
-		[Test]
-		public void ShouldExecuteMaxWithoutSelector()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			int result = queryable
-				.Where(x => x.Name.StartsWith("T"))
-				.Select(x => x.Age)
-				.Max();
-
-			result.Should().Be(40);
-		}
-
-		[Test]
-		public void ShouldExecuteMaxWithoutSelect()
-		{
-			IQueryable<Person> queryable = this.collection.AsQueryable();
-			Person result = queryable
-				.Where(x => x.Name.StartsWith("T"))
-				.Max();
-
-			result.Should().Be(null);
 		}
 	}
 }

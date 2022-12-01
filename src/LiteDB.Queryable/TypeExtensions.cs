@@ -7,6 +7,12 @@
 
 	internal static class TypeExtensions
 	{
+		public static bool IsNullable(this Type type)
+		{
+			bool isNullable = type.Name == "Nullable`1";
+			return isNullable;
+		}
+
 		public static Type GetSequenceType(this Type type)
 		{
 			Type sequenceType = type.TryGetSequenceType();
