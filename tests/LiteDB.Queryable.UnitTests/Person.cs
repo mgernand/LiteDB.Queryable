@@ -12,6 +12,8 @@
 
 		public int Height { get; set; }
 
+		public int? Weight { get; set; }
+
 		/// <inheritdoc />
 		public override string ToString()
 		{

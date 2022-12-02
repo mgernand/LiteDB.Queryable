@@ -15,6 +15,7 @@ namespace LiteDB.Queryable.UnitTests
 	using System.Linq;
 	using System.Threading.Tasks;
 	using FluentAssertions;
+	using NUnit.Framework;
 
 	[TestFixture]
 	public class QueryableTests
@@ -41,31 +42,36 @@ namespace LiteDB.Queryable.UnitTests
 			{
 				Name = "Thomas",
 				Age = 30,
-				Height = 170
+				Height = 170,
+				Weight = 15
 			});
 			this.peopleCollection.Insert(new Person
 			{
 				Name = "Benjamin",
 				Age = 25,
-				Height = 170
+				Height = 170,
+				Weight = 20
 			});
 			this.peopleCollection.Insert(new Person
 			{
 				Name = "Thomas",
 				Age = 27,
-				Height = 200
+				Height = 200,
+				Weight = null
 			});
 			this.peopleCollection.Insert(new Person
 			{
 				Name = "Albert",
 				Age = 27,
-				Height = 180
+				Height = 180,
+				Weight = 30
 			});
 			this.peopleCollection.Insert(new Person
 			{
 				Name = "Tim",
 				Age = 40,
-				Height = 160
+				Height = 160,
+				Weight = 10
 			});
 
 			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
@@ -127,6 +133,31 @@ namespace LiteDB.Queryable.UnitTests
 				.Average(x => x.Age);
 
 			result.Should().Be(97 / 3.0);
+		}
+
+		[Test]
+		public void ShouldExecuteAverageWithSelectorNullable()
+		{
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+			double result = queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.Average(x => x.Weight)
+				.GetValueOrDefault();
+
+			result.Should().Be(25 / 2.0);
+		}
+
+		[Test]
+		public void ShouldExecuteAverageWithoutSelectorNullable()
+		{
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+			double result = queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.Select(x => x.Weight)
+				.Average()
+				.GetValueOrDefault();
+
+			result.Should().Be(25 / 2.0);
 		}
 
 		[Test]
@@ -393,6 +424,31 @@ namespace LiteDB.Queryable.UnitTests
 				.Sum(x => x.Age);
 
 			result.Should().Be(97);
+		}
+
+		[Test]
+		public void ShouldExecuteSumWithoutSelectorNullable()
+		{
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+			int result = queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.Select(x => x.Weight)
+				.Sum()
+				.GetValueOrDefault();
+
+			result.Should().Be(25);
+		}
+
+		[Test]
+		public void ShouldExecuteSumWithSelectorNullable()
+		{
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+			int result = queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.Sum(x => x.Weight)
+				.GetValueOrDefault();
+
+			result.Should().Be(25);
 		}
 
 		[Test]
