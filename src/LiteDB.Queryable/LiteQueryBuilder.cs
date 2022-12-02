@@ -137,9 +137,28 @@ namespace LiteDB.Queryable
 
 		private TResult GetEnumerableResult<TResult>(bool isAsync)
 		{
-			return isAsync
-				? (TResult)this.queryableAsync.ToEnumerableAsync().AsAsyncEnumerable()
-				: (TResult)this.queryable.ToEnumerable();
+			TResult result;
+
+			if(this.isSelectApplied)
+			{
+				if(isAsync)
+				{
+					result = (TResult)this.GetSelectEnumerableAsyncInstance();
+				}
+				else
+				{
+					result = (TResult)this.GetSelectEnumerableInstance();
+				}
+			}
+			else
+			{
+				return isAsync
+					? (TResult)this.queryableAsync.ToEnumerableAsync().AsAsyncEnumerable()
+					: (TResult)this.queryable.ToEnumerable();
+			}
+
+
+			return result;
 		}
 
 		private TResult GetFirstResult<TResult>(bool isAsync)
@@ -726,6 +745,7 @@ namespace LiteDB.Queryable
 				nameof(Enumerable.OrderByDescending) => "root",
 				nameof(Enumerable.Skip) => "root",
 				nameof(Enumerable.Take) => "root",
+				nameof(Enumerable.Select) => "root",
 				null => "root",
 				_ => executionMethodName
 			};
