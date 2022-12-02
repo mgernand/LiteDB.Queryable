@@ -31,14 +31,24 @@ namespace LiteDB.Queryable
 		private static readonly List<MethodInfo> MaxMethods = typeof(Queryable).GetRuntimeMethods().Where(m => m.Name == "Max").ToList();
 		private static readonly List<MethodInfo> MaxAsyncMethods = typeof(AsyncEnumerable).GetRuntimeMethods().Where(m => m.Name == "MaxAsync").ToList();
 
+		private static readonly MethodInfo GenericAsQueryableMethod = typeof(Queryable).GetRuntimeMethods().Single(m => m.Name == "AsQueryable" && m.IsGenericMethod);
+		private static readonly MethodInfo GenericAsAsyncEnumerableMethod = typeof(QueryableExtensions).GetRuntimeMethods().Single(m => m.Name == "AsAsyncEnumerable" && m.IsGenericMethod);
+
 		private static readonly MethodInfo GenericSelectMethod = typeof(ILiteQueryable<T>).GetRuntimeMethods().Single(m => m.Name == "Select" && m.IsGenericMethod);
 		private static readonly MethodInfo GenericSelectAsyncMethod = typeof(ILiteQueryableAsync<T>).GetRuntimeMethods().Single(m => m.Name == "Select" && m.IsGenericMethod);
 
 		private static readonly MethodInfo GenericIncludeMethod = typeof(ILiteQueryable<T>).GetRuntimeMethods().Single(m => m.Name == "Include" && m.IsGenericMethod);
 		private static readonly MethodInfo GenericIncludeAsyncMethod = typeof(ILiteQueryableAsync<T>).GetRuntimeMethods().Single(m => m.Name == "Include" && m.IsGenericMethod);
 
-		private static readonly MethodInfo GenericAsQueryableMethod = typeof(Queryable).GetRuntimeMethods().Single(m => m.Name == "AsQueryable" && m.IsGenericMethod);
-		private static readonly MethodInfo GenericAsAsyncEnumerableMethod = typeof(QueryableExtensions).GetRuntimeMethods().Single(m => m.Name == "AsAsyncEnumerable" && m.IsGenericMethod);
+		private static readonly Dictionary<Type, MethodInfo> FirstMethods = new Dictionary<Type, MethodInfo>();
+		private static readonly Dictionary<Type, MethodInfo> FirstOrDefaultMethods = new Dictionary<Type, MethodInfo>();
+		private static readonly Dictionary<Type, MethodInfo> SingleMethods = new Dictionary<Type, MethodInfo>();
+		private static readonly Dictionary<Type, MethodInfo> SingleOrDefaultMethods = new Dictionary<Type, MethodInfo>();
+
+		private static readonly Dictionary<Type, MethodInfo> FirstAsyncMethods = new Dictionary<Type, MethodInfo>();
+		private static readonly Dictionary<Type, MethodInfo> FirstOrDefaultAsyncMethods = new Dictionary<Type, MethodInfo>();
+		private static readonly Dictionary<Type, MethodInfo> SingleAsyncMethods = new Dictionary<Type, MethodInfo>();
+		private static readonly Dictionary<Type, MethodInfo> SingleOrDefaultAsyncMethods = new Dictionary<Type, MethodInfo>();
 
 		private ILiteQueryable<T> queryable;
 		private ILiteQueryableAsync<T> queryableAsync;
@@ -127,37 +137,136 @@ namespace LiteDB.Queryable
 
 		private TResult GetEnumerableResult<TResult>(bool isAsync)
 		{
-			return isAsync
-				? (TResult)this.queryableAsync.ToEnumerableAsync().AsAsyncEnumerable()
-				: (TResult)this.queryable.ToEnumerable();
+			TResult result;
+
+			if(this.isSelectApplied)
+			{
+				if(isAsync)
+				{
+					result = (TResult)this.GetSelectEnumerableAsyncInstance();
+				}
+				else
+				{
+					result = (TResult)this.GetSelectEnumerableInstance();
+				}
+			}
+			else
+			{
+				return isAsync
+					? (TResult)this.queryableAsync.ToEnumerableAsync().AsAsyncEnumerable()
+					: (TResult)this.queryable.ToEnumerable();
+			}
+
+
+			return result;
 		}
 
 		private TResult GetFirstResult<TResult>(bool isAsync)
 		{
-			return isAsync
-				? (TResult)(object)this.queryableAsync.FirstAsync()
-				: (TResult)(object)this.queryable.First();
+			TResult result;
+
+			if(this.isSelectApplied)
+			{
+				if(isAsync)
+				{
+					MethodInfo firstAsyncMethod = GetResultAsyncMethod<TResult>(nameof(AsyncEnumerable.FirstAsync));
+					result = (TResult)firstAsyncMethod.Invoke(this.selectedQueryableAsync, Array.Empty<object>());
+				}
+				else
+				{
+					MethodInfo firstMethod = GetResultMethod<TResult>(nameof(Queryable.First));
+					result = (TResult)firstMethod.Invoke(this.selectedQueryable, Array.Empty<object>());
+				}
+			}
+			else
+			{
+				result = isAsync
+					? (TResult)(object)this.queryableAsync.FirstAsync()
+					: (TResult)(object)this.queryable.First();
+			}
+
+			return result;
 		}
 
 		private TResult GetFirstOrDefaultResult<TResult>(bool isAsync)
 		{
-			return isAsync
-				? (TResult)(object)this.queryableAsync.FirstOrDefaultAsync()
-				: (TResult)(object)this.queryable.FirstOrDefault();
+			TResult result;
+
+			if(this.isSelectApplied)
+			{
+				if(isAsync)
+				{
+					MethodInfo firstOrDefaultAsyncMethod = GetResultAsyncMethod<TResult>(nameof(AsyncEnumerable.FirstOrDefaultAsync));
+					result = (TResult)firstOrDefaultAsyncMethod.Invoke(this.selectedQueryableAsync, Array.Empty<object>());
+				}
+				else
+				{
+					MethodInfo firstOrDefaultMethod = GetResultMethod<TResult>(nameof(Queryable.FirstOrDefault));
+					result = (TResult)firstOrDefaultMethod.Invoke(this.selectedQueryable, Array.Empty<object>());
+				}
+			}
+			else
+			{
+				result = isAsync
+					? (TResult)(object)this.queryableAsync.FirstOrDefaultAsync()
+					: (TResult)(object)this.queryable.FirstOrDefault();
+			}
+
+			return result;
 		}
 
 		private TResult GetSingleResult<TResult>(bool isAsync)
 		{
-			return isAsync
-				? (TResult)(object)this.queryableAsync.SingleAsync()
-				: (TResult)(object)this.queryable.Single();
+			TResult result;
+
+			if(this.isSelectApplied)
+			{
+				if(isAsync)
+				{
+					MethodInfo singleAsyncMethod = GetResultAsyncMethod<TResult>(nameof(AsyncEnumerable.SingleAsync));
+					result = (TResult)singleAsyncMethod.Invoke(this.selectedQueryableAsync, Array.Empty<object>());
+				}
+				else
+				{
+					MethodInfo singleMethod = GetResultMethod<TResult>(nameof(Queryable.Single));
+					result = (TResult)singleMethod.Invoke(this.selectedQueryable, Array.Empty<object>());
+				}
+			}
+			else
+			{
+				result = isAsync
+					? (TResult)(object)this.queryableAsync.SingleAsync()
+					: (TResult)(object)this.queryable.Single();
+			}
+
+			return result;
 		}
 
 		private TResult GetSingleOrDefaultResult<TResult>(bool isAsync)
 		{
-			return isAsync
-				? (TResult)(object)this.queryableAsync.SingleOrDefaultAsync()
-				: (TResult)(object)this.queryable.SingleOrDefault();
+			TResult result;
+
+			if(this.isSelectApplied)
+			{
+				if(isAsync)
+				{
+					MethodInfo singleOrDefaultAsyncMethod = GetResultAsyncMethod<TResult>(nameof(AsyncEnumerable.SingleOrDefaultAsync));
+					result = (TResult)singleOrDefaultAsyncMethod.Invoke(this.selectedQueryableAsync, Array.Empty<object>());
+				}
+				else
+				{
+					MethodInfo singleOrDefaultMethod = GetResultMethod<TResult>(nameof(Queryable.SingleOrDefault));
+					result = (TResult)singleOrDefaultMethod.Invoke(this.selectedQueryable, Array.Empty<object>());
+				}
+			}
+			else
+			{
+				result = isAsync
+					? (TResult)(object)this.queryableAsync.SingleOrDefaultAsync()
+					: (TResult)(object)this.queryable.SingleOrDefault();
+			}
+
+			return result;
 		}
 
 		private TResult GetCountResult<TResult>(bool isAsync)
@@ -636,6 +745,7 @@ namespace LiteDB.Queryable
 				nameof(Enumerable.OrderByDescending) => "root",
 				nameof(Enumerable.Skip) => "root",
 				nameof(Enumerable.Take) => "root",
+				nameof(Enumerable.Select) => "root",
 				null => "root",
 				_ => executionMethodName
 			};
@@ -926,6 +1036,70 @@ namespace LiteDB.Queryable
 			}
 
 			return methodInfo;
+		}
+
+		private static MethodInfo GetResultMethod<TResult>(string methodName)
+		{
+			MethodInfo methodInfo;
+
+			Type resultType = typeof(TResult);
+
+			Dictionary<Type, MethodInfo> methods = GetMethodDictionary(methodName);
+			if(methods.ContainsKey(resultType))
+			{
+				methodInfo = methods[resultType];
+			}
+			else
+			{
+				methodInfo = typeof(ILiteQueryableResult<>).MakeGenericType(resultType).GetRuntimeMethods().Single(m => m.Name == methodName);
+				methods.Add(resultType, methodInfo);
+			}
+
+			return methodInfo;
+		}
+
+		private static MethodInfo GetResultAsyncMethod<TResult>(string methodName)
+		{
+			MethodInfo methodInfo;
+
+			Type resultType = typeof(TResult);
+			if(resultType.Name == "Task`1")
+			{
+				resultType = resultType.GetGenericArguments()[0];
+			}
+
+			Dictionary<Type, MethodInfo> methods = GetMethodDictionary(methodName);
+			if(methods.ContainsKey(resultType))
+			{
+				methodInfo = methods[resultType];
+			}
+			else
+			{
+				methodInfo = typeof(ILiteQueryableAsyncResult<>).MakeGenericType(resultType).GetRuntimeMethods().Single(m => m.Name == methodName);
+				methods.Add(resultType, methodInfo);
+			}
+
+			return methodInfo;
+		}
+
+		private static Dictionary<Type, MethodInfo> GetMethodDictionary(string methodName)
+		{
+			Dictionary<Type, MethodInfo> result = methodName switch
+			{
+				nameof(Queryable.First) => FirstMethods,
+				nameof(Queryable.FirstOrDefault) => FirstOrDefaultMethods,
+				nameof(Queryable.Single) => SingleMethods,
+				nameof(Queryable.SingleOrDefault) => SingleOrDefaultMethods,
+
+				nameof(AsyncEnumerable.FirstAsync) => FirstAsyncMethods,
+				nameof(AsyncEnumerable.FirstOrDefaultAsync) => FirstOrDefaultAsyncMethods,
+				nameof(AsyncEnumerable.SingleAsync) => SingleAsyncMethods,
+				nameof(AsyncEnumerable.SingleOrDefaultAsync) => SingleOrDefaultAsyncMethods,
+
+				_ => throw new InvalidOperationException($"Unknown method name: '{methodName}'.")
+			};
+
+			return result;
 		}
 	}
 }

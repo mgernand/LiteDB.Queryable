@@ -69,7 +69,7 @@ namespace LiteDB.Queryable.UnitTests
 			});
 
 			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
-			Person owner = queryable.Single(x => x.Name == "Tim");
+			Person owner = queryable.First(x => x.Name == "Tim");
 
 			this.companiesCollection.Insert(new Company
 			{
@@ -654,6 +654,71 @@ namespace LiteDB.Queryable.UnitTests
 			result.Should().NotBeNull();
 			result.Owner.Should().NotBeNull();
 			result.Owner.Name.Should().NotBeNullOrWhiteSpace().And.Subject.Should().Be("Tim");
+		}
+
+		[Test]
+		public void ShouldSelectValueFirst()
+		{
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+			string result = queryable
+				.Where(x => x.Age == 40)
+				.Select(x => x.Name)
+				.First();
+
+			result.Should().NotBeNullOrWhiteSpace();
+			result.Should().Be("Tim");
+		}
+
+		[Test]
+		public void ShouldSelectValueFirstOrDefault()
+		{
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+			string result = queryable
+				.Where(x => x.Age == 40)
+				.Select(x => x.Name)
+				.FirstOrDefault();
+
+			result.Should().NotBeNullOrWhiteSpace();
+			result.Should().Be("Tim");
+		}
+
+		[Test]
+		public void ShouldSelectValueSingle()
+		{
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+			string result = queryable
+				.Where(x => x.Age == 40)
+				.Select(x => x.Name)
+				.Single();
+
+			result.Should().NotBeNullOrWhiteSpace();
+			result.Should().Be("Tim");
+		}
+
+		[Test]
+		public void ShouldSelectValueSingleOrDefault()
+		{
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+			string result = queryable
+				.Where(x => x.Age == 40)
+				.Select(x => x.Name)
+				.SingleOrDefault();
+
+			result.Should().NotBeNullOrWhiteSpace();
+			result.Should().Be("Tim");
+		}
+
+		[Test]
+		public void ShouldSelectMultipleValues()
+		{
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+			List<string> result = queryable
+				.Where(x => x.Age == 40)
+				.Select(x => x.Name)
+				.ToList();
+
+			result.Should().NotBeNullOrEmpty();
+			result.Count.Should().Be(1);
 		}
 	}
 }
