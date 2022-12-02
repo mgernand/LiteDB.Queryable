@@ -633,5 +633,18 @@ namespace LiteDB.Queryable.UnitTests
 			result.Owner.Should().NotBeNull();
 			result.Owner.Name.Should().NotBeNullOrWhiteSpace().And.Subject.Should().Be("Tim");
 		}
+
+		[Test]
+		public async Task ShouldSelectValueAsync()
+		{
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+			string result = await queryable
+				.Where(x => x.Age == 40)
+				.Select(x => x.Name)
+				.SingleAsync();
+
+			result.Should().NotBeNullOrWhiteSpace();
+			result.Should().Be("Tim");
+		}
 	}
 }
