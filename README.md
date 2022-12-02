@@ -126,3 +126,9 @@ string result = await queryable
 	.Select(x => x.Name)
 	.FirstOrDefaultAsync();
 ```
+
+## References
+
+- [LiteDB](https://github.com/mbdavid/LiteDB)
+- [LiteDB Async](https://github.com/mlockett42/litedb-async)
+- [Entity Framework Core](https://github.com/dotnet/efcore)
