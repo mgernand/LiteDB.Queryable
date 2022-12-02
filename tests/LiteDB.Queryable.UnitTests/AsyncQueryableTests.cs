@@ -70,7 +70,7 @@ namespace LiteDB.Queryable.UnitTests
 			});
 
 			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
-			Person owner = await queryable.SingleAsync(x => x.Name == "Tim");
+			Person owner = await queryable.FirstAsync(x => x.Name == "Tim");
 
 			await this.companiesCollection.InsertAsync(new Company
 			{
@@ -635,7 +635,33 @@ namespace LiteDB.Queryable.UnitTests
 		}
 
 		[Test]
-		public async Task ShouldSelectValueAsync()
+		public async Task ShouldSelectValueFirstAsync()
+		{
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+			string result = await queryable
+				.Where(x => x.Age == 40)
+				.Select(x => x.Name)
+				.FirstAsync();
+
+			result.Should().NotBeNullOrWhiteSpace();
+			result.Should().Be("Tim");
+		}
+
+		[Test]
+		public async Task ShouldSelectValueFirstOrDefaultAsync()
+		{
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+			string result = await queryable
+				.Where(x => x.Age == 40)
+				.Select(x => x.Name)
+				.FirstOrDefaultAsync();
+
+			result.Should().NotBeNullOrWhiteSpace();
+			result.Should().Be("Tim");
+		}
+
+		[Test]
+		public async Task ShouldSelectValueSingleAsync()
 		{
 			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			string result = await queryable
@@ -645,6 +671,32 @@ namespace LiteDB.Queryable.UnitTests
 
 			result.Should().NotBeNullOrWhiteSpace();
 			result.Should().Be("Tim");
+		}
+
+		[Test]
+		public async Task ShouldSelectValueSingleOrDefaultAsync()
+		{
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+			string result = await queryable
+				.Where(x => x.Age == 40)
+				.Select(x => x.Name)
+				.SingleOrDefaultAsync();
+
+			result.Should().NotBeNullOrWhiteSpace();
+			result.Should().Be("Tim");
+		}
+
+		[Test]
+		public async Task ShouldSelectMultipleValuesAsync()
+		{
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+			List<string> result = await queryable
+				.Where(x => x.Age == 40)
+				.Select(x => x.Name)
+				.ToListAsync();
+
+			result.Should().NotBeNullOrEmpty();
+			result.Count.Should().Be(1);
 		}
 	}
 }
