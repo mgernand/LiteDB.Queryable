@@ -5,13 +5,19 @@
 
 	internal sealed class SelectFinder : ExpressionVisitor
 	{
+		private bool isAggregateMethodWithoutSelectorUsed;
 		private readonly List<LambdaExpression> selectExpressions = new List<LambdaExpression>();
 
-		public IList<LambdaExpression> GetSelectExpressions(Expression expression)
+		public SelectResult GetSelectExpressions(Expression expression)
 		{
 			this.Visit(expression);
 			this.selectExpressions.Reverse();
-			return this.selectExpressions;
+
+			return new SelectResult
+			{
+				Expressions = this.selectExpressions,
+				IsAggregateMethodWithoutSelectorUsed = this.isAggregateMethodWithoutSelectorUsed
+			};
 		}
 
 		/// <inheritdoc />
@@ -25,6 +31,11 @@
 					LambdaExpression lambdaExpression = (LambdaExpression)expression.Operand;
 					this.selectExpressions.Add(lambdaExpression);
 				}
+			}
+
+			if(node.Method.Name is "Sum" or "Average")
+			{
+				this.isAggregateMethodWithoutSelectorUsed = node.Arguments.Count == 1;
 			}
 
 			this.Visit(node.Arguments[0]);

@@ -1,15 +1,20 @@
 ﻿namespace LiteDB.Queryable.Visitors
 {
+	using System.Collections.Generic;
+	using System.Linq;
 	using System.Linq.Expressions;
 
 	internal sealed class AverageFinder : ExpressionVisitor
 	{
-		private LambdaExpression sumExpression;
+		private LambdaExpression averageExpression;
+		private readonly List<LambdaExpression> selectExpressions = new List<LambdaExpression>();
 
 		public LambdaExpression GetAverageExpression(Expression expression)
 		{
 			this.Visit(expression);
-			return this.sumExpression;
+			this.selectExpressions.Reverse();
+
+			return this.averageExpression ?? this.selectExpressions.LastOrDefault();
 		}
 
 		/// <inheritdoc />
@@ -21,8 +26,15 @@
 				{
 					UnaryExpression expression = (UnaryExpression)node.Arguments[1];
 					LambdaExpression lambdaExpression = (LambdaExpression)expression.Operand;
-					this.sumExpression = lambdaExpression;
+					this.averageExpression = lambdaExpression;
 				}
+			}
+
+			if(node.Method.Name is "Select")
+			{
+				UnaryExpression expression = (UnaryExpression)node.Arguments[1];
+				LambdaExpression lambdaExpression = (LambdaExpression)expression.Operand;
+				this.selectExpressions.Add(lambdaExpression);
 			}
 
 			this.Visit(node.Arguments[0]);

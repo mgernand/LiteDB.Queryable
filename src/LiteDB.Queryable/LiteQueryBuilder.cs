@@ -865,6 +865,10 @@ namespace LiteDB.Queryable
 
 		private void ApplySelect(Expression expression, bool isAsync)
 		{
+			// TODO: Special Cases: .Select(x => x).Sum() | .Select(x => x).Average()
+			//       In this cases the select can not be applied to the Select method, but instead must be given to the aggregate method.
+			//       The expression must be taken from the last Select before the Sum/Average method call.
+
 			int selectCounter = 0;
 			foreach(LambdaExpression selectExpression in EnumerateSelectExpressions(expression))
 			{
@@ -954,11 +958,21 @@ namespace LiteDB.Queryable
 
 		private static IEnumerable<LambdaExpression> EnumerateSelectExpressions(Expression expression)
 		{
-			SelectFinder whereFinder = new SelectFinder();
-			IList<LambdaExpression> selectExpressions = whereFinder.GetSelectExpressions(expression);
+			SelectFinder selectFinder = new SelectFinder();
+			SelectResult selectResult = selectFinder.GetSelectExpressions(expression);
 
-			foreach(LambdaExpression selectExpression in selectExpressions)
+			int count = selectResult.Expressions.Count;
+
+			// Do not yield the last select expression, if an aggregate method (Sum/Average)
+			// was used without a selector expression as parameter.
+			if(selectResult.IsAggregateMethodWithoutSelectorUsed)
 			{
+				count--;
+			}
+
+			for(int index = 0; index < count; index++)
+			{
+				LambdaExpression selectExpression = selectResult.Expressions[index];
 				yield return selectExpression;
 			}
 		}

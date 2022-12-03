@@ -430,6 +430,7 @@ namespace LiteDB.Queryable.UnitTests
 		public void ShouldExecuteSumWithoutSelectorNullable()
 		{
 			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+
 			int result = queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.Select(x => x.Weight)
