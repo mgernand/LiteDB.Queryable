@@ -16,6 +16,7 @@ namespace LiteDB.Queryable.UnitTests
 	using System.Threading.Tasks;
 	using FluentAssertions;
 	using LiteDB.Async;
+	using NUnit.Framework;
 
 	[TestFixture]
 	public class AsyncQueryableTests
@@ -42,31 +43,36 @@ namespace LiteDB.Queryable.UnitTests
 			{
 				Name = "Thomas",
 				Age = 30,
-				Height = 170
+				Height = 170,
+				Weight = 15
 			});
 			await this.peopleCollection.InsertAsync(new Person
 			{
 				Name = "Benjamin",
 				Age = 25,
-				Height = 170
+				Height = 170,
+				Weight = 20
 			});
 			await this.peopleCollection.InsertAsync(new Person
 			{
 				Name = "Thomas",
 				Age = 27,
-				Height = 200
+				Height = 200,
+				Weight = null
 			});
 			await this.peopleCollection.InsertAsync(new Person
 			{
 				Name = "Albert",
 				Age = 27,
-				Height = 180
+				Height = 180,
+				Weight = 30
 			});
 			await this.peopleCollection.InsertAsync(new Person
 			{
 				Name = "Tim",
 				Age = 40,
-				Height = 160
+				Height = 160,
+				Weight = 10
 			});
 
 			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
@@ -527,6 +533,33 @@ namespace LiteDB.Queryable.UnitTests
 		}
 
 		[Test]
+		public async Task ShouldExecuteSumWithoutSelectorNullableAsync()
+		{
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+			int result = await queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.Select(x => x.Weight)
+				.SumAsync()
+				.ConfigureAwait(false)
+				.GetValueOrDefault();
+
+			result.Should().Be(25);
+		}
+
+		[Test]
+		public async Task ShouldExecuteSumWithSelectorNullableAsync()
+		{
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+			int result = await queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.SumAsync(x => x.Weight)
+				.ConfigureAwait(false)
+				.GetValueOrDefault();
+
+			result.Should().Be(25);
+		}
+
+		[Test]
 		public async Task ShouldExecuteAverageWithSelectorAsync()
 		{
 			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
@@ -547,6 +580,33 @@ namespace LiteDB.Queryable.UnitTests
 				.AverageAsync();
 
 			result.Should().Be(97 / 3.0);
+		}
+
+		[Test]
+		public async Task ShouldExecuteAverageWithSelectorNullableAsync()
+		{
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+			double result = await queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.AverageAsync(x => x.Weight)
+				.ConfigureAwait(false)
+				.GetValueOrDefault();
+
+			result.Should().Be(25 / 2.0);
+		}
+
+		[Test]
+		public async Task ShouldExecuteAverageWithoutSelectorNullableAsync()
+		{
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+			double result = await queryable
+				.Where(x => x.Name.StartsWith("T"))
+				.Select(x => x.Weight)
+				.AverageAsync()
+				.ConfigureAwait(false)
+				.GetValueOrDefault();
+
+			result.Should().Be(25 / 2.0);
 		}
 
 		[Test]
