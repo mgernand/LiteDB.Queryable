@@ -2,6 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // From: https://github.com/dotnet/efcore/blob/main/src/EFCore/Query/QueryableMethods.cs
 
+#pragma warning disable CS1574
+#pragma warning disable CS0419
+#pragma warning disable CS1580
 namespace LiteDB.Queryable
 {
 	using System;
