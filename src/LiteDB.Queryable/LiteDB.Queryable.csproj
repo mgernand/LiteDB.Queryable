@@ -12,9 +12,9 @@
 		<PackageId>$(AssemblyName)</PackageId>
 		<IncludeSymbols>false</IncludeSymbols>
 		<Copyright>Copyright © 2022-2023 Matthias Gernand. All rights reserved.</Copyright>
-		<Version>1.0.5</Version>
-		<AssemblyVersion>1.0.5</AssemblyVersion>
-		<FileVersion>1.0.5</FileVersion>
+		<Version>1.0.6</Version>
+		<AssemblyVersion>1.0.6</AssemblyVersion>
+		<FileVersion>1.0.6</FileVersion>
 		<Authors>Matthias Gernand</Authors>
 		<Description>An IQueryable wrapper implementation for LiteDB with additional async extensions.</Description>
 		<NeutralLanguage>en</NeutralLanguage>
