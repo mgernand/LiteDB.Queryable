@@ -12,9 +12,9 @@
 		<PackageId>$(AssemblyName)</PackageId>
 		<IncludeSymbols>false</IncludeSymbols>
 		<Copyright>Copyright © 2022-2023 Matthias Gernand. All rights reserved.</Copyright>
-		<Version>1.0.7</Version>
-		<AssemblyVersion>1.0.7</AssemblyVersion>
-		<FileVersion>1.0.7</FileVersion>
+		<Version>1.0.8</Version>
+		<AssemblyVersion>1.0.8</AssemblyVersion>
+		<FileVersion>1.0.8</FileVersion>
 		<Authors>Matthias Gernand</Authors>
 		<Description>An IQueryable wrapper implementation for LiteDB with additional async extensions.</Description>
 		<NeutralLanguage>en</NeutralLanguage>
@@ -40,9 +40,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="JetBrains.Annotations" Version="2023.2.0" />
+		<PackageReference Include="JetBrains.Annotations" Version="2023.3.0" />
 		<PackageReference Include="LiteDB" Version="5.0.17" />
-		<PackageReference Include="LiteDB.Async" Version="0.1.6" />
+		<PackageReference Include="LiteDB.Async" Version="0.1.7" />
 		<PackageReference Include="System.Linq.Async" Version="6.0.1" />
 	</ItemGroup>
 
