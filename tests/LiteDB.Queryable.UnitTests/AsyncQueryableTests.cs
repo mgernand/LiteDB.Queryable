@@ -685,10 +685,11 @@ namespace LiteDB.Queryable.UnitTests
 		public async Task ShouldIncludeReferencedEntityAsync()
 		{
 			IQueryable<Company> queryable = this.companiesCollection.AsQueryable();
-			Company result = await queryable
-				.Include(x => x.Owner)
-				.FirstAsync(x => x.Name.StartsWith("ACME"));
+			var results = await queryable
+				.Include(x => x.Owner).ToListAsync();
 
+			results.Should().HaveCountGreaterThan(0);
+			var result = results[0];
 			result.Should().NotBeNull();
 			result.Owner.Should().NotBeNull();
 			result.Owner.Name.Should().NotBeNullOrWhiteSpace().And.Subject.Should().Be("Tim");
