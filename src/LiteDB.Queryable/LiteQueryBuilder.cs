@@ -16,7 +16,8 @@ namespace LiteDB.Queryable
 
 	internal sealed class LiteQueryBuilder<T>
 	{
-		private const string ExecutionMethodName_Root = "root";
+		private const string ExecutionMethodNameRoot = "root";
+
 		private static readonly Dictionary<Type, MethodInfo> GenericAsTaskMethods = new Dictionary<Type, MethodInfo>();
 		private static readonly MethodInfo GenericGetExpressionMethod = typeof(BsonMapper).GetRuntimeMethods().Single(m => m.Name == "GetExpression" && m.IsGenericMethod);
 
@@ -58,13 +59,11 @@ namespace LiteDB.Queryable
 		private object selectedQueryable;
 		private object selectedQueryableAsync;
 
-		private readonly ILiteCollection<T> collection;
 		private readonly ILiteCollectionAsync<T> collectionAsync;
 
 		public LiteQueryBuilder(ILiteCollection<T> collection)
 		{
 			this.queryable = collection.Query();
-			this.collection = collection;
 		}
 
 		public LiteQueryBuilder(ILiteCollectionAsync<T> collection)
@@ -76,7 +75,6 @@ namespace LiteDB.Queryable
 			// for an async collection but is used with the non-async LINQ methods.
 			LiteCollectionAsync<T> liteCollection = (LiteCollectionAsync<T>)collection;
 			this.queryable = liteCollection.UnderlyingCollection.Query();
-			this.collection = liteCollection.UnderlyingCollection;
 		}
 
 		public TResult ExecuteAsync<TResult>(Expression expression)
@@ -118,7 +116,7 @@ namespace LiteDB.Queryable
 
 			TResult result = executionMethodName switch
 			{
-				ExecutionMethodName_Root => this.GetEnumerableResult<TResult>(isAsync),
+				ExecutionMethodNameRoot => this.GetEnumerableResult<TResult>(isAsync),
 				nameof(Queryable.First) => this.GetFirstResult<TResult>(isAsync),
 				nameof(Queryable.FirstOrDefault) => this.GetFirstOrDefaultResult<TResult>(isAsync),
 				nameof(Queryable.Single) => this.GetSingleResult<TResult>(isAsync),
@@ -741,14 +739,14 @@ namespace LiteDB.Queryable
 			// Filter out special method names that need to return the root result.
 			executionMethodName = executionMethodName switch
 			{
-				nameof(Enumerable.Where) => ExecutionMethodName_Root,
-				nameof(Enumerable.OrderBy) => ExecutionMethodName_Root,
-				nameof(Enumerable.OrderByDescending) => ExecutionMethodName_Root,
-				nameof(Enumerable.Skip) => ExecutionMethodName_Root,
-				nameof(Enumerable.Take) => ExecutionMethodName_Root,
-				nameof(Enumerable.Select) => ExecutionMethodName_Root,
-				"Include" => ExecutionMethodName_Root,
-				null => ExecutionMethodName_Root,
+				nameof(Enumerable.Where) => ExecutionMethodNameRoot,
+				nameof(Enumerable.OrderBy) => ExecutionMethodNameRoot,
+				nameof(Enumerable.OrderByDescending) => ExecutionMethodNameRoot,
+				nameof(Enumerable.Skip) => ExecutionMethodNameRoot,
+				nameof(Enumerable.Take) => ExecutionMethodNameRoot,
+				nameof(Enumerable.Select) => ExecutionMethodNameRoot,
+				"Include" => ExecutionMethodNameRoot,
+				null => ExecutionMethodNameRoot,
 				_ => executionMethodName
 			};
 
