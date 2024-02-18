@@ -16,6 +16,7 @@ namespace LiteDB.Queryable
 
 	internal sealed class LiteQueryBuilder<T>
 	{
+		private const string ExecutionMethodName_Root = "root";
 		private static readonly Dictionary<Type, MethodInfo> GenericAsTaskMethods = new Dictionary<Type, MethodInfo>();
 		private static readonly MethodInfo GenericGetExpressionMethod = typeof(BsonMapper).GetRuntimeMethods().Single(m => m.Name == "GetExpression" && m.IsGenericMethod);
 
@@ -117,7 +118,7 @@ namespace LiteDB.Queryable
 
 			TResult result = executionMethodName switch
 			{
-				"root" => this.GetEnumerableResult<TResult>(isAsync),
+				ExecutionMethodName_Root => this.GetEnumerableResult<TResult>(isAsync),
 				nameof(Queryable.First) => this.GetFirstResult<TResult>(isAsync),
 				nameof(Queryable.FirstOrDefault) => this.GetFirstOrDefaultResult<TResult>(isAsync),
 				nameof(Queryable.Single) => this.GetSingleResult<TResult>(isAsync),
@@ -740,13 +741,14 @@ namespace LiteDB.Queryable
 			// Filter out special method names that need to return the root result.
 			executionMethodName = executionMethodName switch
 			{
-				nameof(Enumerable.Where) => "root",
-				nameof(Enumerable.OrderBy) => "root",
-				nameof(Enumerable.OrderByDescending) => "root",
-				nameof(Enumerable.Skip) => "root",
-				nameof(Enumerable.Take) => "root",
-				nameof(Enumerable.Select) => "root",
-				null => "root",
+				nameof(Enumerable.Where) => ExecutionMethodName_Root,
+				nameof(Enumerable.OrderBy) => ExecutionMethodName_Root,
+				nameof(Enumerable.OrderByDescending) => ExecutionMethodName_Root,
+				nameof(Enumerable.Skip) => ExecutionMethodName_Root,
+				nameof(Enumerable.Take) => ExecutionMethodName_Root,
+				nameof(Enumerable.Select) => ExecutionMethodName_Root,
+				"Include" => ExecutionMethodName_Root,
+				null => ExecutionMethodName_Root,
 				_ => executionMethodName
 			};
 
