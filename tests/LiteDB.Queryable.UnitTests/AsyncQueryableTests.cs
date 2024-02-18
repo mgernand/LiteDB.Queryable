@@ -77,11 +77,13 @@ namespace LiteDB.Queryable.UnitTests
 
 			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person owner = await queryable.FirstAsync(x => x.Name == "Tim");
+			List<Person> employees = await queryable.Where(x => x.Name != "Tim").ToListAsync();
 
 			await this.companiesCollection.InsertAsync(new Company
 			{
 				Name = "ACME Inc.",
-				Owner = owner
+				Owner = owner,
+				Employees = employees
 			});
 		}
 
@@ -685,14 +687,32 @@ namespace LiteDB.Queryable.UnitTests
 		public async Task ShouldIncludeReferencedEntityAsync()
 		{
 			IQueryable<Company> queryable = this.companiesCollection.AsQueryable();
-			var results = await queryable
-				.Include(x => x.Owner).ToListAsync();
+			List<Company> results = await queryable
+				.Include(x => x.Owner)
+				.ToListAsync();
 
 			results.Should().HaveCountGreaterThan(0);
-			var result = results[0];
+			Company result = results[0];
+
 			result.Should().NotBeNull();
 			result.Owner.Should().NotBeNull();
 			result.Owner.Name.Should().NotBeNullOrWhiteSpace().And.Subject.Should().Be("Tim");
+		}
+
+		[Test]
+		public async Task ShouldIncludeReferencedEntitiesAsync()
+		{
+			IQueryable<Company> queryable = this.companiesCollection.AsQueryable();
+			List<Company> results = await queryable
+				.Include(x => x.Employees)
+				.ToListAsync();
+
+			results.Should().HaveCountGreaterThan(0);
+			Company result = results[0];
+
+			result.Should().NotBeNull();
+			result.Employees.Should().NotBeNullOrEmpty();
+			result.Employees.Should().HaveCount(4);
 		}
 
 		[Test]
