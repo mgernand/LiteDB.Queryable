@@ -1,5 +1,4 @@
 ﻿// ReSharper disable StaticMemberInGenericType
-
 // ReSharper disable ReplaceWithSingleCallToSingle
 
 namespace LiteDB.Queryable
@@ -59,6 +58,8 @@ namespace LiteDB.Queryable
 		private object selectedQueryable;
 		private object selectedQueryableAsync;
 
+		private bool isQueryBuild = false;
+
 		private readonly ILiteCollectionAsync<T> collectionAsync;
 
 		public LiteQueryBuilder(ILiteCollection<T> collection)
@@ -94,25 +95,35 @@ namespace LiteDB.Queryable
 				throw new InvalidOperationException("The queryable is not async.");
 			}
 
+			if(!this.isQueryBuild) // Only build the LiteDb query once.
+			{
+				try
+				{
+					// Apply 'Where' expression(s) to query.
+					this.ApplyWhere(expression, isAsync);
+
+					// Apply 'OrderBy' expression(s) to query.
+					this.ApplyOrderBy(expression, isAsync);
+
+					// Apply 'Skip' value to query.
+					this.ApplySkip(expression, isAsync);
+
+					// Apply 'Take' value to query.
+					this.ApplyTake(expression, isAsync);
+
+					// Apply 'Include' expression(s) to query.
+					this.ApplyInclude(expression, isAsync);
+
+					// Apply 'Select' expression(s) to query.
+					this.ApplySelect(expression, isAsync);
+				}
+				finally
+				{
+					this.isQueryBuild = true;
+				}
+			}
+
 			string executionMethodName = GetExecutionMethodName(expression);
-
-			// Apply 'Where' expression(s) to query.
-			this.ApplyWhere(expression, isAsync);
-
-			// Apply 'OrderBy' expression(s) to query.
-			this.ApplyOrderBy(expression, isAsync);
-
-			// Apply 'Skip' value to query.
-			this.ApplySkip(expression, isAsync);
-
-			// Apply 'Take' value to query.
-			this.ApplyTake(expression, isAsync);
-
-			// Apply 'Include' expression(s) to query.
-			this.ApplyInclude(expression, isAsync);
-
-			// Apply 'Select' expression(s) to query.
-			this.ApplySelect(expression, isAsync);
 
 			TResult result = executionMethodName switch
 			{

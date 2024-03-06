@@ -11,7 +11,6 @@ namespace LiteDB.Queryable.UnitTests
 {
 	using System;
 	using System.Collections.Generic;
-	using System.IO;
 	using System.Linq;
 	using System.Threading.Tasks;
 	using FluentAssertions;
@@ -26,7 +25,7 @@ namespace LiteDB.Queryable.UnitTests
 		private ILiteCollectionAsync<Company> companiesCollection;
 
 		[OneTimeSetUp]
-		public void SetUpFixture()
+		public void OneTimeSetup()
 		{
 			BsonMapper.Global.Entity<Company>()
 				.DbRef(x => x.Owner, "people");
@@ -35,7 +34,7 @@ namespace LiteDB.Queryable.UnitTests
 		[SetUp]
 		public async Task Setup()
 		{
-			this.database = new LiteDatabaseAsync("test.db");
+			this.database = new LiteDatabaseAsync($"{Guid.NewGuid():N}.db");
 			this.peopleCollection = this.database.GetCollection<Person>("people");
 			this.companiesCollection = this.database.GetCollection<Company>("companies");
 
@@ -93,8 +92,6 @@ namespace LiteDB.Queryable.UnitTests
 			this.database?.Dispose();
 			this.database = null;
 			this.peopleCollection = null;
-
-			File.Delete("test.db");
 		}
 
 		[Test]
@@ -712,7 +709,7 @@ namespace LiteDB.Queryable.UnitTests
 
 			result.Should().NotBeNull();
 			result.Employees.Should().NotBeNullOrEmpty();
-			result.Employees.Should().HaveCount(4);
+			result.Employees.Should().HaveCount(5);
 		}
 
 		[Test]

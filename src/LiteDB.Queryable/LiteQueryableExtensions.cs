@@ -152,7 +152,7 @@ namespace LiteDB.Queryable
 		/// <exception cref="ArgumentNullException"><paramref name="source" /> is <see langword="null" />.</exception>
 		/// <exception cref="InvalidOperationException">
 		///     <para>
-		///         <paramref name="source" /> contains more than one elements.
+		///         <paramref name="source" /> contains more than one element.
 		///     </para>
 		///     <para>
 		///         -or-
