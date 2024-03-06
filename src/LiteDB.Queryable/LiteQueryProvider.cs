@@ -28,10 +28,7 @@
 		{
 			IQueryable queryable = (IQueryable)GenericCreateQueryMethod
 				.MakeGenericMethod(expression.Type.GetSequenceType())
-				.Invoke(this, new object[]
-				{
-					expression
-				});
+				.Invoke(this, [ expression ]);
 
 			return queryable;
 		}
@@ -49,10 +46,7 @@
 		{
 			object result = GenericExecuteMethod
 				.MakeGenericMethod(expression.Type)
-				.Invoke(this, new object[]
-				{
-					expression
-				});
+				.Invoke(this, [ expression ]);
 
 			return result;
 		}
