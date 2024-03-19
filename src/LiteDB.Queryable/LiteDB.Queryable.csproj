@@ -2,30 +2,6 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;netstandard2.1;net6.0;net7.0;net8.0</TargetFrameworks>
-		<LangVersion>latest</LangVersion>
-		<Nullable>disable</Nullable>
-		<ImplicitUsings>disable</ImplicitUsings>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup>
-		<PackageId>$(AssemblyName)</PackageId>
-		<IncludeSymbols>false</IncludeSymbols>
-		<Copyright>Copyright © 2022-2024 Matthias Gernand. All rights reserved.</Copyright>
-		<Version>2.2.1</Version>
-		<AssemblyVersion>2.2.1</AssemblyVersion>
-		<FileVersion>2.2.1</FileVersion>
-		<Authors>Matthias Gernand</Authors>
-		<Description>An IQueryable wrapper implementation for LiteDB with additional async extensions.</Description>
-		<NeutralLanguage>en</NeutralLanguage>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<PackageProjectUrl>https://github.com/mgernand/LiteDB.Queryable</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/mgernand/LiteDB.Queryable</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-		<PackageTags>litedb;linq;queryable</PackageTags>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageIcon>icon.png</PackageIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
