@@ -58,24 +58,26 @@ namespace LiteDB.Queryable
 		private object selectedQueryable;
 		private object selectedQueryableAsync;
 
-		private bool isQueryBuild = false;
-
+		private readonly ILiteCollection<T> collection;
 		private readonly ILiteCollectionAsync<T> collectionAsync;
+
+		private readonly bool isAsync;
 
 		public LiteQueryBuilder(ILiteCollection<T> collection)
 		{
-			this.queryable = collection.Query();
+			this.isAsync = false;
+			this.collection = collection;
 		}
 
 		public LiteQueryBuilder(ILiteCollectionAsync<T> collection)
 		{
-			this.queryableAsync = collection.Query();
+			this.isAsync = true;
 			this.collectionAsync = collection;
 
 			// Extract the underlying collection in case the queryable was created
 			// for an async collection but is used with the non-async LINQ methods.
-			LiteCollectionAsync<T> liteCollection = (LiteCollectionAsync<T>)collection;
-			this.queryable = liteCollection.UnderlyingCollection.Query();
+			LiteCollectionAsync<T> liteCollectionAsync = (LiteCollectionAsync<T>)collection;
+			this.collection = liteCollectionAsync.UnderlyingCollection;
 		}
 
 		public TResult ExecuteAsync<TResult>(Expression expression)
@@ -88,70 +90,80 @@ namespace LiteDB.Queryable
 			return this.Execute<TResult>(expression, false);
 		}
 
-		private TResult Execute<TResult>(Expression expression, bool isAsync)
+		private TResult Execute<TResult>(Expression expression, bool isExecutedAsync)
 		{
-			if(isAsync && this.collectionAsync is null)
+			if(isExecutedAsync && !this.isAsync)
 			{
 				throw new InvalidOperationException("The queryable is not async.");
 			}
 
-			if(!this.isQueryBuild) // Only build the LiteDb query once.
+			if(isExecutedAsync)
 			{
-				try
-				{
-					// Apply 'Where' expression(s) to query.
-					this.ApplyWhere(expression, isAsync);
-
-					// Apply 'OrderBy' expression(s) to query.
-					this.ApplyOrderBy(expression, isAsync);
-
-					// Apply 'Skip' value to query.
-					this.ApplySkip(expression, isAsync);
-
-					// Apply 'Take' value to query.
-					this.ApplyTake(expression, isAsync);
-
-					// Apply 'Include' expression(s) to query.
-					this.ApplyInclude(expression, isAsync);
-
-					// Apply 'Select' expression(s) to query.
-					this.ApplySelect(expression, isAsync);
-				}
-				finally
-				{
-					this.isQueryBuild = true;
-				}
+				this.queryableAsync = this.collectionAsync.Query();
+			}
+			else
+			{
+				this.queryable = this.collection.Query();
 			}
 
-			string executionMethodName = GetExecutionMethodName(expression);
+			TResult result;
 
-			TResult result = executionMethodName switch
+			try
 			{
-				ExecutionMethodNameRoot => this.GetEnumerableResult<TResult>(isAsync),
-				nameof(Queryable.First) => this.GetFirstResult<TResult>(isAsync),
-				nameof(Queryable.FirstOrDefault) => this.GetFirstOrDefaultResult<TResult>(isAsync),
-				nameof(Queryable.Single) => this.GetSingleResult<TResult>(isAsync),
-				nameof(Queryable.SingleOrDefault) => this.GetSingleOrDefaultResult<TResult>(isAsync),
-				nameof(Queryable.Count) => this.GetCountResult<TResult>(isAsync),
-				nameof(Queryable.LongCount) => this.GetLongCountResult<TResult>(isAsync),
-				nameof(Queryable.Any) => this.GetAnyResult<TResult>(isAsync),
-				nameof(Queryable.Sum) => this.GetSumResult<TResult>(expression, isAsync),
-				nameof(Queryable.Average) => this.GetAverageResult<TResult>(expression, isAsync),
-				nameof(Queryable.Min) => this.GetMinResult<TResult>(expression, isAsync),
-				nameof(Queryable.Max) => this.GetMaxResult<TResult>(expression, isAsync),
-				_ => throw new NotSupportedException($"The LINQ extension method '{executionMethodName}' is not supported.")
-			};
+				// Apply 'Where' expression(s) to query.
+				this.ApplyWhere(expression, isExecutedAsync);
+
+				// Apply 'OrderBy' expression(s) to query.
+				this.ApplyOrderBy(expression, isExecutedAsync);
+
+				// Apply 'Skip' value to query.
+				this.ApplySkip(expression, isExecutedAsync);
+
+				// Apply 'Take' value to query.
+				this.ApplyTake(expression, isExecutedAsync);
+
+				// Apply 'Include' expression(s) to query.
+				this.ApplyInclude(expression, isExecutedAsync);
+
+				// Apply 'Select' expression(s) to query.
+				this.ApplySelect(expression, isExecutedAsync);
+
+				string executionMethodName = GetExecutionMethodName(expression);
+
+				result = executionMethodName switch
+				{
+					ExecutionMethodNameRoot => this.GetEnumerableResult<TResult>(isExecutedAsync),
+					nameof(Queryable.First) => this.GetFirstResult<TResult>(isExecutedAsync),
+					nameof(Queryable.FirstOrDefault) => this.GetFirstOrDefaultResult<TResult>(isExecutedAsync),
+					nameof(Queryable.Single) => this.GetSingleResult<TResult>(isExecutedAsync),
+					nameof(Queryable.SingleOrDefault) => this.GetSingleOrDefaultResult<TResult>(isExecutedAsync),
+					nameof(Queryable.Count) => this.GetCountResult<TResult>(isExecutedAsync),
+					nameof(Queryable.LongCount) => this.GetLongCountResult<TResult>(isExecutedAsync),
+					nameof(Queryable.Any) => this.GetAnyResult<TResult>(isExecutedAsync),
+					nameof(Queryable.Sum) => this.GetSumResult<TResult>(expression, isExecutedAsync),
+					nameof(Queryable.Average) => this.GetAverageResult<TResult>(expression, isExecutedAsync),
+					nameof(Queryable.Min) => this.GetMinResult<TResult>(expression, isExecutedAsync),
+					nameof(Queryable.Max) => this.GetMaxResult<TResult>(expression, isExecutedAsync),
+					_ => throw new NotSupportedException($"The LINQ extension method '{executionMethodName}' is not supported.")
+				};
+			}
+			finally
+			{
+				// Reset the LiteDB query.
+				this.queryableAsync = null;
+				this.queryable = null;
+			}
 
 			return result;
 		}
 
-		private TResult GetEnumerableResult<TResult>(bool isAsync)
+		private TResult GetEnumerableResult<TResult>(bool isExecutedAsync)
 		{
 			TResult result;
 
 			if(this.isSelectApplied)
 			{
-				if(isAsync)
+				if(isExecutedAsync)
 				{
 					result = (TResult)this.GetSelectEnumerableAsyncInstance();
 				}
@@ -162,22 +174,21 @@ namespace LiteDB.Queryable
 			}
 			else
 			{
-				return isAsync
+				return isExecutedAsync
 					? (TResult)this.queryableAsync.ToEnumerableAsync().AsAsyncEnumerable()
 					: (TResult)this.queryable.ToEnumerable();
 			}
 
-
 			return result;
 		}
 
-		private TResult GetFirstResult<TResult>(bool isAsync)
+		private TResult GetFirstResult<TResult>(bool isExecutedAsync)
 		{
 			TResult result;
 
 			if(this.isSelectApplied)
 			{
-				if(isAsync)
+				if(isExecutedAsync)
 				{
 					MethodInfo firstAsyncMethod = GetResultAsyncMethod<TResult>(nameof(AsyncEnumerable.FirstAsync));
 					result = (TResult)firstAsyncMethod.Invoke(this.selectedQueryableAsync, Array.Empty<object>());
@@ -190,7 +201,7 @@ namespace LiteDB.Queryable
 			}
 			else
 			{
-				result = isAsync
+				result = isExecutedAsync
 					? (TResult)(object)this.queryableAsync.FirstAsync()
 					: (TResult)(object)this.queryable.First();
 			}
@@ -198,13 +209,13 @@ namespace LiteDB.Queryable
 			return result;
 		}
 
-		private TResult GetFirstOrDefaultResult<TResult>(bool isAsync)
+		private TResult GetFirstOrDefaultResult<TResult>(bool isExecutedAsync)
 		{
 			TResult result;
 
 			if(this.isSelectApplied)
 			{
-				if(isAsync)
+				if(isExecutedAsync)
 				{
 					MethodInfo firstOrDefaultAsyncMethod = GetResultAsyncMethod<TResult>(nameof(AsyncEnumerable.FirstOrDefaultAsync));
 					result = (TResult)firstOrDefaultAsyncMethod.Invoke(this.selectedQueryableAsync, Array.Empty<object>());
@@ -217,7 +228,7 @@ namespace LiteDB.Queryable
 			}
 			else
 			{
-				result = isAsync
+				result = isExecutedAsync
 					? (TResult)(object)this.queryableAsync.FirstOrDefaultAsync()
 					: (TResult)(object)this.queryable.FirstOrDefault();
 			}
@@ -225,13 +236,13 @@ namespace LiteDB.Queryable
 			return result;
 		}
 
-		private TResult GetSingleResult<TResult>(bool isAsync)
+		private TResult GetSingleResult<TResult>(bool isExecutedAsync)
 		{
 			TResult result;
 
 			if(this.isSelectApplied)
 			{
-				if(isAsync)
+				if(isExecutedAsync)
 				{
 					MethodInfo singleAsyncMethod = GetResultAsyncMethod<TResult>(nameof(AsyncEnumerable.SingleAsync));
 					result = (TResult)singleAsyncMethod.Invoke(this.selectedQueryableAsync, Array.Empty<object>());
@@ -244,7 +255,7 @@ namespace LiteDB.Queryable
 			}
 			else
 			{
-				result = isAsync
+				result = isExecutedAsync
 					? (TResult)(object)this.queryableAsync.SingleAsync()
 					: (TResult)(object)this.queryable.Single();
 			}
@@ -252,13 +263,13 @@ namespace LiteDB.Queryable
 			return result;
 		}
 
-		private TResult GetSingleOrDefaultResult<TResult>(bool isAsync)
+		private TResult GetSingleOrDefaultResult<TResult>(bool isExecutedAsync)
 		{
 			TResult result;
 
 			if(this.isSelectApplied)
 			{
-				if(isAsync)
+				if(isExecutedAsync)
 				{
 					MethodInfo singleOrDefaultAsyncMethod = GetResultAsyncMethod<TResult>(nameof(AsyncEnumerable.SingleOrDefaultAsync));
 					result = (TResult)singleOrDefaultAsyncMethod.Invoke(this.selectedQueryableAsync, Array.Empty<object>());
@@ -271,7 +282,7 @@ namespace LiteDB.Queryable
 			}
 			else
 			{
-				result = isAsync
+				result = isExecutedAsync
 					? (TResult)(object)this.queryableAsync.SingleOrDefaultAsync()
 					: (TResult)(object)this.queryable.SingleOrDefault();
 			}
@@ -279,23 +290,23 @@ namespace LiteDB.Queryable
 			return result;
 		}
 
-		private TResult GetCountResult<TResult>(bool isAsync)
+		private TResult GetCountResult<TResult>(bool isExecutedAsync)
 		{
-			return isAsync
+			return isExecutedAsync
 				? (TResult)(object)this.queryableAsync.CountAsync()
 				: (TResult)(object)this.queryable.Count();
 		}
 
-		private TResult GetLongCountResult<TResult>(bool isAsync)
+		private TResult GetLongCountResult<TResult>(bool isExecutedAsync)
 		{
-			return isAsync
+			return isExecutedAsync
 				? (TResult)(object)this.queryableAsync.LongCountAsync()
 				: (TResult)(object)this.queryable.LongCount();
 		}
 
-		private TResult GetAnyResult<TResult>(bool isAsync)
+		private TResult GetAnyResult<TResult>(bool isExecutedAsync)
 		{
-			return isAsync
+			return isExecutedAsync
 				? (TResult)(object)this.queryableAsync.ExistsAsync()
 				: (TResult)(object)this.queryable.Exists();
 		}
@@ -764,11 +775,11 @@ namespace LiteDB.Queryable
 			return executionMethodName;
 		}
 
-		private void ApplyWhere(Expression expression, bool isAsync)
+		private void ApplyWhere(Expression expression, bool isExecutedAsync)
 		{
 			foreach(BsonExpression whereExpression in EnumerateWhereExpressions(expression))
 			{
-				if(isAsync)
+				if(isExecutedAsync)
 				{
 					this.queryableAsync = this.queryableAsync.Where(whereExpression);
 				}
@@ -779,7 +790,7 @@ namespace LiteDB.Queryable
 			}
 		}
 
-		private void ApplyOrderBy(Expression expression, bool isAsync)
+		private void ApplyOrderBy(Expression expression, bool isExecutedAsync)
 		{
 			int orderByCounter = 0;
 			foreach((BsonExpression orderExpression, bool isDescending, bool isSecondary) in EnumerateOrderExpressions(expression))
@@ -791,7 +802,7 @@ namespace LiteDB.Queryable
 						throw new NotSupportedException("Multiple OrderBy is not supported.");
 					}
 
-					if(isAsync)
+					if(isExecutedAsync)
 					{
 						this.queryableAsync = isDescending
 							? this.queryableAsync.OrderByDescending(orderExpression)
@@ -813,13 +824,13 @@ namespace LiteDB.Queryable
 			}
 		}
 
-		private void ApplySkip(Expression expression, bool isAsync)
+		private void ApplySkip(Expression expression, bool isExecutedAsync)
 		{
 			SkipFinder skipFinder = new SkipFinder();
 			int? skipValue = skipFinder.GetSkipValue(expression);
 			if(skipValue.HasValue)
 			{
-				if(isAsync)
+				if(isExecutedAsync)
 				{
 					this.queryableAsync = (ILiteQueryableAsync<T>)this.queryableAsync.Skip(skipValue.Value);
 				}
@@ -830,13 +841,13 @@ namespace LiteDB.Queryable
 			}
 		}
 
-		private void ApplyTake(Expression expression, bool isAsync)
+		private void ApplyTake(Expression expression, bool isExecutedAsync)
 		{
 			TakeFinder takeFinder = new TakeFinder();
 			int? takeAmount = takeFinder.GetTakeValue(expression);
 			if(takeAmount.HasValue)
 			{
-				if(isAsync)
+				if(isExecutedAsync)
 				{
 					this.queryableAsync = (ILiteQueryableAsync<T>)this.queryableAsync.Limit(takeAmount.Value);
 				}
@@ -847,13 +858,13 @@ namespace LiteDB.Queryable
 			}
 		}
 
-		private void ApplyInclude(Expression expression, bool isAsync)
+		private void ApplyInclude(Expression expression, bool isExecutedAsync)
 		{
 			foreach(LambdaExpression includeExpression in EnumerateIncludeExpressions(expression))
 			{
 				Type returnType = includeExpression.ReturnType;
 
-				if(isAsync)
+				if(isExecutedAsync)
 				{
 					this.queryableAsync = (ILiteQueryableAsync<T>)GenericIncludeAsyncMethod
 						.MakeGenericMethod(returnType)
@@ -874,7 +885,7 @@ namespace LiteDB.Queryable
 			}
 		}
 
-		private void ApplySelect(Expression expression, bool isAsync)
+		private void ApplySelect(Expression expression, bool isExecutedAsync)
 		{
 			// TODO: Special Cases: .Select(x => x).Sum() | .Select(x => x).Average()
 			//       In this cases the select can not be applied to the Select method, but instead must be given to the aggregate method.
@@ -890,7 +901,7 @@ namespace LiteDB.Queryable
 
 				Type returnType = selectExpression.ReturnType;
 
-				if(isAsync)
+				if(isExecutedAsync)
 				{
 					this.selectedQueryableAsync = GenericSelectAsyncMethod
 						.MakeGenericMethod(returnType)
@@ -1070,9 +1081,9 @@ namespace LiteDB.Queryable
 			Type resultType = typeof(TResult);
 
 			Dictionary<Type, MethodInfo> methods = GetMethodDictionary(methodName);
-			if(methods.ContainsKey(resultType))
+			if(methods.TryGetValue(resultType, out MethodInfo method))
 			{
-				methodInfo = methods[resultType];
+				methodInfo = method;
 			}
 			else
 			{
@@ -1094,9 +1105,9 @@ namespace LiteDB.Queryable
 			}
 
 			Dictionary<Type, MethodInfo> methods = GetMethodDictionary(methodName);
-			if(methods.ContainsKey(resultType))
+			if(methods.TryGetValue(resultType, out MethodInfo method))
 			{
-				methodInfo = methods[resultType];
+				methodInfo = method;
 			}
 			else
 			{
@@ -1115,12 +1126,10 @@ namespace LiteDB.Queryable
 				nameof(Queryable.FirstOrDefault) => FirstOrDefaultMethods,
 				nameof(Queryable.Single) => SingleMethods,
 				nameof(Queryable.SingleOrDefault) => SingleOrDefaultMethods,
-
 				nameof(AsyncEnumerable.FirstAsync) => FirstAsyncMethods,
 				nameof(AsyncEnumerable.FirstOrDefaultAsync) => FirstOrDefaultAsyncMethods,
 				nameof(AsyncEnumerable.SingleAsync) => SingleAsyncMethods,
 				nameof(AsyncEnumerable.SingleOrDefaultAsync) => SingleOrDefaultAsyncMethods,
-
 				_ => throw new InvalidOperationException($"Unknown method name: '{methodName}'.")
 			};
 

@@ -27,7 +27,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<VersionPrefix>2.2.2</VersionPrefix>
+		<VersionPrefix>2.3.0</VersionPrefix>
 		<VersionSuffix></VersionSuffix>
 		<FileVersion>$(VersionPrefix)</FileVersion>
 		<AssemblyVersion>$(VersionPrefix)</AssemblyVersion>
@@ -35,8 +35,8 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<Product>Results</Product>
-		<AssemblyTitle>Results</AssemblyTitle>
+		<Product>LiteDB.Queryable</Product>
+		<AssemblyTitle>LiteDB.Queryable</AssemblyTitle>
 		<Copyright>Copyright © 2022-2024 Matthias Gernand. All rights reserved.</Copyright>
 	</PropertyGroup>
 

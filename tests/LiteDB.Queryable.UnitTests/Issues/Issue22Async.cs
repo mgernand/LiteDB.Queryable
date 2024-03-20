@@ -7,6 +7,7 @@ namespace LiteDB.Queryable.UnitTests.Issues
 	using System;
 	using LiteDB.Async;
 	using System.Threading.Tasks;
+	using FluentAssertions;
 
 	/// <summary>
 	///		See: https://github.com/mgernand/LiteDB.Queryable/issues/22 (Thanks @ismailbennani)
@@ -76,12 +77,12 @@ namespace LiteDB.Queryable.UnitTests.Issues
 			int firstResult = await queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.CountAsync();
-			Console.WriteLine(firstResult);
+			firstResult.Should().Be(3);
 
 			int secondResult = await queryable
-				.Where(x => x.Name.StartsWith("T"))
+				.Where(x => x.Name.StartsWith("B"))
 				.CountAsync();
-			Console.WriteLine(secondResult);
+			secondResult.Should().Be(1);
 		}
 	}
 }

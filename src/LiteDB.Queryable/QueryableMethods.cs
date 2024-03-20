@@ -60,8 +60,7 @@ namespace LiteDB.Queryable
 
 		/// <summary>
 		///     The <see cref="MethodInfo" /> for
-		///     <see
-		///         cref="Queryable.Count{TSource}(IQueryable,Expression{Func{TSource,bool}})" />
+		///     <see cref="Queryable.Count{TSource}(IQueryable,Expression{Func{TSource,bool}})" />
 		/// </summary>
 		public static MethodInfo CountWithPredicate { get; }
 
@@ -134,22 +133,19 @@ namespace LiteDB.Queryable
 
 		/// <summary>
 		///     The <see cref="MethodInfo" /> for
-		///     <see
-		///         cref="Queryable.GroupBy{TSource,TKey,TElement,TResult}(IQueryable,Expression{Func{TSource,TKey}},Expression{Func{TSource,TElement}},Expression{Func{TKey,IEnumerable{TElement},TResult}})" />
+		///     <see cref="Queryable.GroupBy{TSource,TKey,TElement,TResult}(IQueryable,Expression{Func{TSource,TKey}},Expression{Func{TSource,TElement}},Expression{Func{TKey,IEnumerable{TElement},TResult}})" />
 		/// </summary>
 		public static MethodInfo GroupByWithKeyElementResultSelector { get; }
 
 		/// <summary>
 		///     The <see cref="MethodInfo" /> for
-		///     <see
-		///         cref="Queryable.GroupBy{TSource,TKey,TResult}(IQueryable,Expression{Func{TSource,TKey}},Expression{Func{TKey,IEnumerable{TSource},TResult}})" />
+		///     <see cref="Queryable.GroupBy{TSource,TKey,TResult}(IQueryable,Expression{Func{TSource,TKey}},Expression{Func{TKey,IEnumerable{TSource},TResult}})" />
 		/// </summary>
 		public static MethodInfo GroupByWithKeyResultSelector { get; }
 
 		/// <summary>
 		///     The <see cref="MethodInfo" /> for
-		///     <see
-		///         cref="Queryable.GroupJoin{TOuter,TInner,TKey,TResult}(IQueryable,IEnumerable{TInner},Expression{Func{TOuter,TKey}},Expression{Func{TInner,TKey}},Expression{Func{TOuter,IEnumerable{TInner},TResult}})" />
+		///     <see cref="Queryable.GroupJoin{TOuter,TInner,TKey,TResult}(IQueryable,IEnumerable{TInner},Expression{Func{TOuter,TKey}},Expression{Func{TInner,TKey}},Expression{Func{TOuter,IEnumerable{TInner},TResult}})" />
 		/// </summary>
 		public static MethodInfo GroupJoin { get; }
 
@@ -161,8 +157,7 @@ namespace LiteDB.Queryable
 
 		/// <summary>
 		///     The <see cref="MethodInfo" /> for
-		///     <see
-		///         cref="Queryable.Join{TOuter,TInner,TKey,TResult}(IQueryable,IEnumerable{TInner},Expression{Func{TOuter,TKey}},Expression{Func{TInner,TKey}},Expression{Func{TOuter,TInner,TResult}})" />
+		///     <see cref="Queryable.Join{TOuter,TInner,TKey,TResult}(IQueryable,IEnumerable{TInner},Expression{Func{TOuter,TKey}},Expression{Func{TInner,TKey}},Expression{Func{TOuter,TInner,TResult}})" />
 		/// </summary>
 		public static MethodInfo Join { get; }
 
@@ -253,15 +248,13 @@ namespace LiteDB.Queryable
 
 		/// <summary>
 		///     The <see cref="MethodInfo" /> for
-		///     <see
-		///         cref="Queryable.SelectMany{TSource,TResult}(IQueryable,Expression{Func{TSource,IEnumerable{TResult}}})" />
+		///     <see cref="Queryable.SelectMany{TSource,TResult}(IQueryable,Expression{Func{TSource,IEnumerable{TResult}}})" />
 		/// </summary>
 		public static MethodInfo SelectManyWithoutCollectionSelector { get; }
 
 		/// <summary>
 		///     The <see cref="MethodInfo" /> for
-		///     <see
-		///         cref="Queryable.SelectMany{TSource,TCollection,TResult}(IQueryable,Expression{Func{TSource,IEnumerable{TCollection}}},Expression{Func{TSource,TCollection,TResult}})" />
+		///     <see cref="Queryable.SelectMany{TSource,TCollection,TResult}(IQueryable,Expression{Func{TSource,IEnumerable{TCollection}}},Expression{Func{TSource,TCollection,TResult}})" />
 		/// </summary>
 		public static MethodInfo SelectManyWithCollectionSelector { get; }
 
@@ -336,7 +329,7 @@ namespace LiteDB.Queryable
 		public static MethodInfo Where { get; }
 
 		/// <summary>
-		///     Checks whether or not the given <see cref="MethodInfo" /> is one of the <see cref="O:Queryable.Average" /> without
+		///     Checks whether, or not, the given <see cref="MethodInfo" /> is one of the <see cref="O:Queryable.Average" /> without
 		///     a selector.
 		/// </summary>
 		/// <param name="methodInfo">The method to check.</param>
@@ -347,7 +340,7 @@ namespace LiteDB.Queryable
 		}
 
 		/// <summary>
-		///     Checks whether or not the given <see cref="MethodInfo" /> is one of the <see cref="O:Queryable.Average" /> with a
+		///     Checks whether, or not, the given <see cref="MethodInfo" /> is one of the <see cref="O:Queryable.Average" /> with a
 		///     selector.
 		/// </summary>
 		/// <param name="methodInfo">The method to check.</param>
@@ -359,7 +352,7 @@ namespace LiteDB.Queryable
 		}
 
 		/// <summary>
-		///     Checks whether or not the given <see cref="MethodInfo" /> is one of the <see cref="O:Queryable.Sum" /> without a
+		///     Checks whether, or not, the given <see cref="MethodInfo" /> is one of the <see cref="O:Queryable.Sum" /> without a
 		///     selector.
 		/// </summary>
 		/// <param name="methodInfo">The method to check.</param>
@@ -370,7 +363,7 @@ namespace LiteDB.Queryable
 		}
 
 		/// <summary>
-		///     Checks whether or not the given <see cref="MethodInfo" /> is one of the <see cref="O:Queryable.Sum" /> with a
+		///     Checks whether, or not, the given <see cref="MethodInfo" /> is one of the <see cref="O:Queryable.Sum" /> with a
 		///     selector.
 		/// </summary>
 		/// <param name="methodInfo">The method to check.</param>

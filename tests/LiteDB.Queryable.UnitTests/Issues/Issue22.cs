@@ -5,6 +5,7 @@ namespace LiteDB.Queryable.UnitTests.Issues
 	using NUnit.Framework;
 	using System.Linq;
 	using System;
+	using FluentAssertions;
 
 	/// <summary>
 	///		See: https://github.com/mgernand/LiteDB.Queryable/issues/22 (Thanks @ismailbennani)
@@ -74,12 +75,12 @@ namespace LiteDB.Queryable.UnitTests.Issues
 			int firstResult = queryable
 				.Where(x => x.Name.StartsWith("T"))
 				.Count();
-			Console.WriteLine(firstResult);
+			firstResult.Should().Be(3);
 
 			int secondResult = queryable
-				.Where(x => x.Name.StartsWith("T"))
+				.Where(x => x.Name.StartsWith("B"))
 				.Count();
-			Console.WriteLine(secondResult);
+			secondResult.Should().Be(1);
 		}
 	}
 }

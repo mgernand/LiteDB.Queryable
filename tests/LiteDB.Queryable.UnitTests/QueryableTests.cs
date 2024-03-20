@@ -76,10 +76,14 @@ namespace LiteDB.Queryable.UnitTests
 			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person owner = queryable.First(x => x.Name == "Tim");
 
+			queryable = this.peopleCollection.AsQueryable();
+			List<Person> employees = queryable.Where(x => x.Name != "Tim").ToList();
+
 			this.companiesCollection.Insert(new Company
 			{
 				Name = "ACME Inc.",
-				Owner = owner
+				Owner = owner,
+				Employees = employees
 			});
 		}
 
@@ -89,6 +93,24 @@ namespace LiteDB.Queryable.UnitTests
 			this.database?.Dispose();
 			this.database = null;
 			this.peopleCollection = null;
+		}
+
+		[Test]
+		public void ShouldAllowMultipleExecuteForPaging()
+		{
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+
+			// Execute the query to get the total item count.
+			int count = queryable.Count();
+			count.Should().Be(5);
+
+			// Then apply a skip/take to the queryable.
+			queryable = queryable.Skip(2).Take(2);
+
+			// Execute the query again with the skip/take.
+			IList<Person> persons = queryable.ToList();
+			persons.Should().NotBeNullOrEmpty();
+			persons.Count.Should().Be(2);
 		}
 
 		[Test]
@@ -710,6 +732,21 @@ namespace LiteDB.Queryable.UnitTests
 			result.Owner.Name.Should().NotBeNullOrWhiteSpace().And.Subject.Should().Be("Tim");
 		}
 
+		[Test]
+		public void ShouldIncludeReferencedEntities()
+		{
+			IQueryable<Company> queryable = this.companiesCollection.AsQueryable();
+			List<Company> results = queryable
+				.Include(x => x.Employees)
+				.ToList();
+
+			results.Should().HaveCountGreaterThan(0);
+			Company result = results[0];
+
+			result.Should().NotBeNull();
+			result.Employees.Should().NotBeNullOrEmpty();
+			result.Employees.Should().HaveCount(4);
+		}
 		[Test]
 		public void ShouldSelectValueFirst()
 		{
