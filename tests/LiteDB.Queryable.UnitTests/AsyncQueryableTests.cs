@@ -76,6 +76,8 @@ namespace LiteDB.Queryable.UnitTests
 
 			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
 			Person owner = await queryable.FirstAsync(x => x.Name == "Tim");
+
+			queryable = this.peopleCollection.AsQueryable();
 			List<Person> employees = await queryable.Where(x => x.Name != "Tim").ToListAsync();
 
 			await this.companiesCollection.InsertAsync(new Company
@@ -95,6 +97,24 @@ namespace LiteDB.Queryable.UnitTests
 		}
 
 		[Test]
+		public async Task ShouldAllowMultipleExecuteForPaging()
+		{
+			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
+
+			// Execute the query to get the total item count.
+			int count = await queryable.CountAsync();
+			count.Should().Be(5);
+
+			// Then apply a skip/take to the queryable.
+			queryable = queryable.Skip(2).Take(2);
+
+			// Execute the query again with the skip/take.
+			IList<Person> persons = await queryable.ToListAsync();
+			persons.Should().NotBeNullOrEmpty();
+			persons.Count.Should().Be(2);
+		}
+
+		[Test]
 		public void ShouldCreateQueryable()
 		{
 			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
@@ -102,19 +122,19 @@ namespace LiteDB.Queryable.UnitTests
 		}
 
 		[Test]
-		public void ShouldExecuteRootToListOnAsyncCollection()
+		public async Task ShouldExecuteRootToListOnAsyncCollection()
 		{
 			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
-			List<Person> result = queryable.ToList();
+			List<Person> result = await queryable.ToListAsync();
 
 			result.Should().HaveCount(5);
 		}
 
 		[Test]
-		public void ShouldExecuteRootToArrayOnAsyncCollection()
+		public async Task ShouldExecuteRootToArrayOnAsyncCollection()
 		{
 			IQueryable<Person> queryable = this.peopleCollection.AsQueryable();
-			Person[] result = queryable.ToArray();
+			Person[] result = await queryable.ToArrayAsync();
 
 			result.Should().HaveCount(5);
 		}
@@ -709,7 +729,7 @@ namespace LiteDB.Queryable.UnitTests
 
 			result.Should().NotBeNull();
 			result.Employees.Should().NotBeNullOrEmpty();
-			result.Employees.Should().HaveCount(5);
+			result.Employees.Should().HaveCount(4);
 		}
 
 		[Test]
