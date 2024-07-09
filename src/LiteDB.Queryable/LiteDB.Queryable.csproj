@@ -16,9 +16,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="JetBrains.Annotations" Version="2023.3.0" PrivateAssets="All" />
-		<PackageReference Include="LiteDB" Version="5.0.20" />
-		<PackageReference Include="LiteDB.Async" Version="0.1.7" />
+		<PackageReference Include="JetBrains.Annotations" Version="2024.2.0" PrivateAssets="All" />
+		<PackageReference Include="LiteDB" Version="5.0.21" />
+		<PackageReference Include="LiteDB.Async" Version="0.1.8" />
 		<PackageReference Include="System.Linq.Async" Version="6.0.1" />
 	</ItemGroup>
 
