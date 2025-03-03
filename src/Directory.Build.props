@@ -37,7 +37,7 @@
 	<PropertyGroup>
 		<Product>LiteDB.Queryable</Product>
 		<AssemblyTitle>LiteDB.Queryable</AssemblyTitle>
-		<Copyright>Copyright © 2022-2024 Matthias Gernand. All rights reserved.</Copyright>
+		<Copyright>Copyright © 2022-2025 Matthias Gernand. All rights reserved.</Copyright>
 	</PropertyGroup>
 
 </Project>
