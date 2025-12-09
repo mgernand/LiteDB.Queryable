@@ -8,8 +8,6 @@ The ```LiteQueryable<T>``` implementation is a warpper around a ```ILiteCollecti
 or a ```ILiteCollectionAsync<>```. The LINQ extenions call are delegated to the 
 equivalent methods of the LiteDB API.
 
-## This repository was moved to https://codeberg.org/mgernand/LiteDB.Queryable
-
 ## Usage
 
 Add the NuGet package to your project: ```LiteDB.Queryable```
