@@ -7,7 +7,7 @@
 	internal sealed class AverageFinder : ExpressionVisitor
 	{
 		private LambdaExpression averageExpression;
-		private readonly List<LambdaExpression> selectExpressions = new List<LambdaExpression>();
+		private readonly List<LambdaExpression> selectExpressions = [];
 
 		public LambdaExpression GetAverageExpression(Expression expression)
 		{

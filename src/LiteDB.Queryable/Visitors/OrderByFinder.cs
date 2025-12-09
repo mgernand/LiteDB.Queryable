@@ -5,8 +5,8 @@
 
 	internal sealed class OrderByFinder : ExpressionVisitor
 	{
-		private readonly List<OrderExpression> orderByExpressions = new List<OrderExpression>();
-		private readonly List<OrderExpression> thenByExpressions = new List<OrderExpression>();
+		private readonly List<OrderExpression> orderByExpressions = [];
+		private readonly List<OrderExpression> thenByExpressions = [];
 
 		public OrderResult GetOrderByExpressions(Expression expression)
 		{

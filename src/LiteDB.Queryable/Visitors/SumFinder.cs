@@ -7,7 +7,7 @@
 	internal sealed class SumFinder : ExpressionVisitor
 	{
 		private LambdaExpression sumExpression;
-		private readonly List<LambdaExpression> selectExpressions = new List<LambdaExpression>();
+		private readonly List<LambdaExpression> selectExpressions = [];
 
 		public LambdaExpression GetSumExpression(Expression expression)
 		{

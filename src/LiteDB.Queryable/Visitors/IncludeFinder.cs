@@ -5,7 +5,7 @@
 
 	internal sealed class IncludeFinder : ExpressionVisitor
 	{
-		private readonly List<LambdaExpression> includeExpressions = new List<LambdaExpression>();
+		private readonly List<LambdaExpression> includeExpressions = [];
 
 		public IList<LambdaExpression> GetIncludeExpressions(Expression expression)
 		{

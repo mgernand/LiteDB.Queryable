@@ -5,7 +5,7 @@
 
 	internal sealed class WhereFinder : ExpressionVisitor
 	{
-		private readonly List<LambdaExpression> whereExpressions = new List<LambdaExpression>();
+		private readonly List<LambdaExpression> whereExpressions = [];
 
 		public IList<LambdaExpression> GetWhereExpressions(Expression expression)
 		{

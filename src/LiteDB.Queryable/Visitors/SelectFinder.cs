@@ -6,7 +6,7 @@
 	internal sealed class SelectFinder : ExpressionVisitor
 	{
 		private bool isAggregateMethodWithoutSelectorUsed;
-		private readonly List<LambdaExpression> selectExpressions = new List<LambdaExpression>();
+		private readonly List<LambdaExpression> selectExpressions = [];
 
 		public SelectResult GetSelectExpressions(Expression expression)
 		{
