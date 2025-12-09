@@ -1,6 +1,8 @@
 ﻿// ReSharper disable StaticMemberInGenericType
 // ReSharper disable ReplaceWithSingleCallToSingle
 
+extern alias SystemLinqAsyncLibrary;
+
 namespace LiteDB.Queryable
 {
 	using System;
@@ -12,6 +14,7 @@ namespace LiteDB.Queryable
 	using System.Threading.Tasks;
 	using LiteDB.Async;
 	using LiteDB.Queryable.Visitors;
+	using AsyncEnumerable = SystemLinqAsyncLibrary::System.Linq.AsyncEnumerable;
 
 	internal sealed class LiteQueryBuilder<T>
 	{
@@ -31,6 +34,58 @@ namespace LiteDB.Queryable
 
 		private static readonly List<MethodInfo> MaxMethods = typeof(Queryable).GetRuntimeMethods().Where(m => m.Name == "Max").ToList();
 		private static readonly List<MethodInfo> MaxAsyncMethods = typeof(AsyncEnumerable).GetRuntimeMethods().Where(m => m.Name == "MaxAsync").ToList();
+
+		//private static readonly List<MethodInfo> SumMethods = typeof(Queryable).GetRuntimeMethods().Where(m => m.Name == "Sum").ToList();
+		//private static readonly List<MethodInfo> SumAsyncMethods = GetSumAsyncMethods();
+
+		//private static List<MethodInfo> GetSumAsyncMethods()
+		//{
+		//	List<MethodInfo> methods = [];
+
+		//	methods.AddRange(typeof(AsyncEnumerable).GetRuntimeMethods().Where(m => m.Name == "SumAsync"));
+		//	methods.AddRange(typeof(AsyncEnumerableEx).GetRuntimeMethods().Where(m => m.Name == "SumAsync"));
+
+		//	return methods;
+		//}
+
+		//private static readonly List<MethodInfo> AverageMethods = typeof(Queryable).GetRuntimeMethods().Where(m => m.Name == "Average").ToList();
+		//private static readonly List<MethodInfo> AverageAsyncMethods = GetAverageAsyncMethods();
+
+		//private static List<MethodInfo> GetAverageAsyncMethods()
+		//{
+		//	List<MethodInfo> methods = [];
+
+		//	methods.AddRange(typeof(AsyncEnumerable).GetRuntimeMethods().Where(m => m.Name == "AverageAsync"));
+		//	methods.AddRange(typeof(AsyncEnumerableEx).GetRuntimeMethods().Where(m => m.Name == "AverageAsync"));
+
+		//	return methods;
+		//}
+
+		//private static readonly List<MethodInfo> MinMethods = typeof(Queryable).GetRuntimeMethods().Where(m => m.Name == "Min").ToList();
+		//private static readonly List<MethodInfo> MinAsyncMethods = GetMinAsyncMethods();
+
+		//private static List<MethodInfo> GetMinAsyncMethods()
+		//{
+		//	List<MethodInfo> methods = [];
+
+		//	methods.AddRange(typeof(AsyncEnumerable).GetRuntimeMethods().Where(m => m.Name == "MinAsync"));
+		//	methods.AddRange(typeof(AsyncEnumerableEx).GetRuntimeMethods().Where(m => m.Name == "MinAsync"));
+
+		//	return methods;
+		//}
+
+		//private static readonly List<MethodInfo> MaxMethods = typeof(Queryable).GetRuntimeMethods().Where(m => m.Name == "Max").ToList();
+		//private static readonly List<MethodInfo> MaxAsyncMethods = GetMaxAsyncMethods();
+
+		//private static List<MethodInfo> GetMaxAsyncMethods()
+		//{
+		//	List<MethodInfo> methods = [];
+
+		//	methods.AddRange(typeof(AsyncEnumerable).GetRuntimeMethods().Where(m => m.Name == "MaxAsync"));
+		//	methods.AddRange(typeof(AsyncEnumerableEx).GetRuntimeMethods().Where(m => m.Name == "MaxAsync"));
+
+		//	return methods;
+		//}
 
 		private static readonly MethodInfo GenericAsQueryableMethod = typeof(Queryable).GetRuntimeMethods().Single(m => m.Name == "AsQueryable" && m.IsGenericMethod);
 		private static readonly MethodInfo GenericAsAsyncEnumerableMethod = typeof(QueryableExtensions).GetRuntimeMethods().Single(m => m.Name == "AsAsyncEnumerable" && m.IsGenericMethod);
@@ -191,12 +246,12 @@ namespace LiteDB.Queryable
 				if(isExecutedAsync)
 				{
 					MethodInfo firstAsyncMethod = GetResultAsyncMethod<TResult>(nameof(AsyncEnumerable.FirstAsync));
-					result = (TResult)firstAsyncMethod.Invoke(this.selectedQueryableAsync, Array.Empty<object>());
+					result = (TResult)firstAsyncMethod.Invoke(this.selectedQueryableAsync, []);
 				}
 				else
 				{
 					MethodInfo firstMethod = GetResultMethod<TResult>(nameof(Queryable.First));
-					result = (TResult)firstMethod.Invoke(this.selectedQueryable, Array.Empty<object>());
+					result = (TResult)firstMethod.Invoke(this.selectedQueryable, []);
 				}
 			}
 			else
@@ -218,12 +273,12 @@ namespace LiteDB.Queryable
 				if(isExecutedAsync)
 				{
 					MethodInfo firstOrDefaultAsyncMethod = GetResultAsyncMethod<TResult>(nameof(AsyncEnumerable.FirstOrDefaultAsync));
-					result = (TResult)firstOrDefaultAsyncMethod.Invoke(this.selectedQueryableAsync, Array.Empty<object>());
+					result = (TResult)firstOrDefaultAsyncMethod.Invoke(this.selectedQueryableAsync, []);
 				}
 				else
 				{
 					MethodInfo firstOrDefaultMethod = GetResultMethod<TResult>(nameof(Queryable.FirstOrDefault));
-					result = (TResult)firstOrDefaultMethod.Invoke(this.selectedQueryable, Array.Empty<object>());
+					result = (TResult)firstOrDefaultMethod.Invoke(this.selectedQueryable, []);
 				}
 			}
 			else
@@ -245,12 +300,12 @@ namespace LiteDB.Queryable
 				if(isExecutedAsync)
 				{
 					MethodInfo singleAsyncMethod = GetResultAsyncMethod<TResult>(nameof(AsyncEnumerable.SingleAsync));
-					result = (TResult)singleAsyncMethod.Invoke(this.selectedQueryableAsync, Array.Empty<object>());
+					result = (TResult)singleAsyncMethod.Invoke(this.selectedQueryableAsync, []);
 				}
 				else
 				{
 					MethodInfo singleMethod = GetResultMethod<TResult>(nameof(Queryable.Single));
-					result = (TResult)singleMethod.Invoke(this.selectedQueryable, Array.Empty<object>());
+					result = (TResult)singleMethod.Invoke(this.selectedQueryable, []);
 				}
 			}
 			else
@@ -272,12 +327,12 @@ namespace LiteDB.Queryable
 				if(isExecutedAsync)
 				{
 					MethodInfo singleOrDefaultAsyncMethod = GetResultAsyncMethod<TResult>(nameof(AsyncEnumerable.SingleOrDefaultAsync));
-					result = (TResult)singleOrDefaultAsyncMethod.Invoke(this.selectedQueryableAsync, Array.Empty<object>());
+					result = (TResult)singleOrDefaultAsyncMethod.Invoke(this.selectedQueryableAsync, []);
 				}
 				else
 				{
 					MethodInfo singleOrDefaultMethod = GetResultMethod<TResult>(nameof(Queryable.SingleOrDefault));
-					result = (TResult)singleOrDefaultMethod.Invoke(this.selectedQueryable, Array.Empty<object>());
+					result = (TResult)singleOrDefaultMethod.Invoke(this.selectedQueryable, []);
 				}
 			}
 			else
@@ -332,12 +387,11 @@ namespace LiteDB.Queryable
 
 					valueTask = sumAsyncMethod
 						.MakeGenericMethod(typeof(T))
-						.Invoke(null, new object[]
-						{
+						.Invoke(null, [
 							this.GetEnumerableAsyncInstance(),
 							selector.Compile(),
-							default(CancellationToken)
-						});
+							CancellationToken.None
+						]);
 				}
 				else
 				{
@@ -347,15 +401,14 @@ namespace LiteDB.Queryable
 						.Single();
 
 					valueTask = sumAsyncMethod
-						.Invoke(null, new object[]
-						{
+						.Invoke(null, [
 							this.GetSelectEnumerableAsyncInstance(),
-							default(CancellationToken)
-						});
+							CancellationToken.None
+						]);
 				}
 
 				MethodInfo asTaskMethod = GetAsTaskMethodFor<TResult>();
-				result = (TResult)asTaskMethod.Invoke(valueTask, Array.Empty<object>());
+				result = (TResult)asTaskMethod.Invoke(valueTask, []);
 			}
 			else
 			{
@@ -368,11 +421,10 @@ namespace LiteDB.Queryable
 
 					result = (TResult)sumAsyncMethod
 						.MakeGenericMethod(typeof(T))
-						.Invoke(null, new object[]
-						{
+						.Invoke(null, [
 							this.GetEnumerableInstance(),
 							selector
-						});
+						]);
 				}
 				else
 				{
@@ -382,10 +434,9 @@ namespace LiteDB.Queryable
 						.Single();
 
 					result = (TResult)sumAsyncMethod
-						.Invoke(null, new object[]
-						{
+						.Invoke(null, [
 							this.GetSelectEnumerableInstance()
-						});
+						]);
 				}
 			}
 
@@ -423,12 +474,11 @@ namespace LiteDB.Queryable
 
 					valueTask = averageAsyncMethod
 						.MakeGenericMethod(typeof(T))
-						.Invoke(null, new object[]
-						{
+						.Invoke(null, [
 							this.GetEnumerableAsyncInstance(),
 							selector.Compile(),
-							default(CancellationToken)
-						});
+							CancellationToken.None
+						]);
 				}
 				else
 				{
@@ -447,15 +497,14 @@ namespace LiteDB.Queryable
 						.Single();
 
 					valueTask = averageAsyncMethod
-						.Invoke(null, new object[]
-						{
+						.Invoke(null, [
 							this.GetSelectEnumerableAsyncInstance(),
-							default(CancellationToken)
-						});
+							CancellationToken.None
+						]);
 				}
 
 				MethodInfo asTaskMethod = GetAsTaskMethodFor<TResult>();
-				result = (TResult)asTaskMethod.Invoke(valueTask, Array.Empty<object>());
+				result = (TResult)asTaskMethod.Invoke(valueTask, []);
 			}
 			else
 			{
@@ -479,11 +528,10 @@ namespace LiteDB.Queryable
 
 					result = (TResult)averageMethod
 						.MakeGenericMethod(typeof(T))
-						.Invoke(null, new object[]
-						{
+						.Invoke(null, [
 							this.GetEnumerableInstance(),
 							selector
-						});
+						]);
 				}
 				else
 				{
@@ -501,10 +549,9 @@ namespace LiteDB.Queryable
 						.Single();
 
 					result = (TResult)averageMethod
-						.Invoke(null, new object[]
-						{
+						.Invoke(null, [
 							this.GetSelectEnumerableInstance()
-						});
+						]);
 				}
 			}
 
@@ -538,12 +585,11 @@ namespace LiteDB.Queryable
 
 					valueTask = minAsyncMethod
 						.MakeGenericMethod(typeof(T))
-						.Invoke(null, new object[]
-						{
+						.Invoke(null, [
 							this.GetEnumerableAsyncInstance(),
 							selector.Compile(),
-							default(CancellationToken)
-						});
+							CancellationToken.None
+						]);
 				}
 				else
 				{
@@ -570,15 +616,14 @@ namespace LiteDB.Queryable
 					}
 
 					valueTask = minAsyncMethod
-						.Invoke(null, new object[]
-						{
+						.Invoke(null, [
 							this.GetSelectEnumerableAsyncInstance() ?? this.GetEnumerableAsyncInstance(),
-							default(CancellationToken)
-						});
+							CancellationToken.None
+						]);
 				}
 
 				MethodInfo asTaskMethod = GetAsTaskMethodFor<TResult>();
-				result = (TResult)asTaskMethod.Invoke(valueTask, Array.Empty<object>());
+				result = (TResult)asTaskMethod.Invoke(valueTask, []);
 			}
 			else
 			{
@@ -596,11 +641,10 @@ namespace LiteDB.Queryable
 
 					result = (TResult)minMethod
 						.MakeGenericMethod(typeof(T), typeof(TResult))
-						.Invoke(null, new object[]
-						{
+						.Invoke(null, [
 							this.GetEnumerableInstance(),
 							selector
-						});
+						]);
 				}
 				else
 				{
@@ -659,12 +703,11 @@ namespace LiteDB.Queryable
 
 					valueTask = maxAsyncMethod
 						.MakeGenericMethod(typeof(T))
-						.Invoke(null, new object[]
-						{
+						.Invoke(null, [
 							this.GetEnumerableAsyncInstance(),
 							selector.Compile(),
-							default(CancellationToken)
-						});
+							CancellationToken.None
+						]);
 				}
 				else
 				{
@@ -691,15 +734,14 @@ namespace LiteDB.Queryable
 					}
 
 					valueTask = maxAsyncMethod
-						.Invoke(null, new object[]
-						{
+						.Invoke(null, [
 							this.GetSelectEnumerableAsyncInstance() ?? this.GetEnumerableAsyncInstance(),
-							default(CancellationToken)
-						});
+							CancellationToken.None
+						]);
 				}
 
 				MethodInfo asTaskMethod = GetAsTaskMethodFor<TResult>();
-				result = (TResult)asTaskMethod.Invoke(valueTask, Array.Empty<object>());
+				result = (TResult)asTaskMethod.Invoke(valueTask, []);
 			}
 			else
 			{
@@ -716,11 +758,10 @@ namespace LiteDB.Queryable
 
 					result = (TResult)maxMethod
 						.MakeGenericMethod(typeof(T), typeof(TResult))
-						.Invoke(null, new object[]
-						{
+						.Invoke(null, [
 							this.GetEnumerableInstance(),
 							selector
-						});
+						]);
 				}
 				else
 				{
@@ -868,19 +909,17 @@ namespace LiteDB.Queryable
 				{
 					this.queryableAsync = (ILiteQueryableAsync<T>)GenericIncludeAsyncMethod
 						.MakeGenericMethod(returnType)
-						.Invoke(this.queryableAsync, new object[]
-						{
+						.Invoke(this.queryableAsync, [
 							includeExpression
-						});
+						]);
 				}
 				else
 				{
 					this.queryable = (ILiteQueryable<T>)GenericIncludeMethod
 						.MakeGenericMethod(returnType)
-						.Invoke(this.queryable, new object[]
-						{
+						.Invoke(this.queryable, [
 							includeExpression
-						});
+						]);
 				}
 			}
 		}
@@ -905,19 +944,17 @@ namespace LiteDB.Queryable
 				{
 					this.selectedQueryableAsync = GenericSelectAsyncMethod
 						.MakeGenericMethod(returnType)
-						.Invoke(this.queryableAsync, new object[]
-						{
+						.Invoke(this.queryableAsync, [
 							selectExpression
-						});
+						]);
 				}
 				else
 				{
 					this.selectedQueryable = GenericSelectMethod
 						.MakeGenericMethod(returnType)
-						.Invoke(this.queryable, new object[]
-						{
+						.Invoke(this.queryable, [
 							selectExpression
-						});
+						]);
 				}
 
 				this.isSelectApplied = true;
@@ -946,10 +983,9 @@ namespace LiteDB.Queryable
 			{
 				BsonExpression bsonExpression = (BsonExpression)GenericGetExpressionMethod
 					.MakeGenericMethod(typeof(T), orderByExpression.Expression.ReturnType)
-					.Invoke(BsonMapper.Global, new object[]
-					{
+					.Invoke(BsonMapper.Global, [
 						orderByExpression.Expression
-					});
+					]);
 
 				yield return (bsonExpression, orderByExpression.IsDescending, false);
 			}
@@ -958,10 +994,9 @@ namespace LiteDB.Queryable
 			{
 				BsonExpression bsonExpression = (BsonExpression)GenericGetExpressionMethod
 					.MakeGenericMethod(typeof(T), orderByExpression.Expression.ReturnType)
-					.Invoke(BsonMapper.Global, new object[]
-					{
+					.Invoke(BsonMapper.Global, [
 						orderByExpression.Expression
-					});
+					]);
 
 				yield return (bsonExpression, orderByExpression.IsDescending, true);
 			}
@@ -1017,14 +1052,13 @@ namespace LiteDB.Queryable
 			if(genericArgumentType is not null)
 			{
 				MethodInfo toEnumerableAsyncMethod = typeof(ILiteQueryableAsyncResult<>).MakeGenericType(genericArgumentType).GetRuntimeMethods().Single(m => m.Name == "ToEnumerableAsync");
-				enumerable = toEnumerableAsyncMethod.Invoke(this.selectedQueryableAsync, Array.Empty<object>());
+				enumerable = toEnumerableAsyncMethod.Invoke(this.selectedQueryableAsync, []);
 
 				enumerable = GenericAsAsyncEnumerableMethod
 					.MakeGenericMethod(genericArgumentType)
-					.Invoke(null, new[]
-					{
+					.Invoke(null, [
 						enumerable
-					});
+					]);
 			}
 
 			return enumerable;
@@ -1038,14 +1072,13 @@ namespace LiteDB.Queryable
 			if(genericArgumentType is not null)
 			{
 				MethodInfo toEnumerableMethod = typeof(ILiteQueryableResult<>).MakeGenericType(genericArgumentType).GetRuntimeMethods().Single(m => m.Name == "ToEnumerable");
-				enumerable = toEnumerableMethod.Invoke(this.selectedQueryable, Array.Empty<object>());
+				enumerable = toEnumerableMethod.Invoke(this.selectedQueryable, []);
 
 				enumerable = GenericAsQueryableMethod
 					.MakeGenericMethod(genericArgumentType)
-					.Invoke(null, new[]
-					{
+					.Invoke(null, [
 						enumerable
-					});
+					]);
 			}
 
 			return enumerable;

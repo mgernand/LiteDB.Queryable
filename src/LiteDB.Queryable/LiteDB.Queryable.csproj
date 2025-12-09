@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.1;net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
+		<TargetFrameworks>netstandard2.1;net8.0;net9.0;net10.0</TargetFrameworks>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -16,10 +16,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="JetBrains.Annotations" Version="2024.3.0" PrivateAssets="All" />
+		<PackageReference Include="JetBrains.Annotations" Version="2025.2.4" PrivateAssets="All" />
 		<PackageReference Include="LiteDB" Version="5.0.21" />
 		<PackageReference Include="LiteDB.Async" Version="0.1.8" />
-		<PackageReference Include="System.Linq.Async" Version="6.0.1" />
+		<PackageReference Include="System.Linq.Async" Version="6.0.3" Aliases="SystemLinqAsyncLibrary" />
 	</ItemGroup>
 
 </Project>

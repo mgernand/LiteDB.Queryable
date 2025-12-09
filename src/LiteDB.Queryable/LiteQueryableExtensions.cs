@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // From: https://github.com/dotnet/efcore/blob/main/src/EFCore/Extensions/EntityFrameworkQueryableExtensions.cs
 
+extern alias SystemLinqAsyncLibrary;
+
 namespace LiteDB.Queryable
 {
 	using System;
@@ -1536,7 +1538,7 @@ namespace LiteDB.Queryable
 			this IQueryable<TSource> source,
 			CancellationToken cancellationToken = default)
 		{
-			List<TSource> list = new List<TSource>();
+			List<TSource> list = [];
 			await foreach(TSource item in source.ToAsyncEnumerable().WithCancellation(cancellationToken))
 			{
 				list.Add(item);
@@ -1742,7 +1744,7 @@ namespace LiteDB.Queryable
 					? source.Provider.CreateQuery<TEntity>(Expression.Call(
 						instance: null,
 						method: IncludeMethodInfo.MakeGenericMethod(typeof(TEntity), typeof(TProperty)),
-						arguments: new[] { source.Expression, Expression.Quote(navigationPropertyPath) }))
+						arguments: [source.Expression, Expression.Quote(navigationPropertyPath)]))
 					: source);
 		}
 
@@ -1802,8 +1804,8 @@ namespace LiteDB.Queryable
 						null,
 						operatorMethodInfo,
 						expression == null
-							? new[] { source.Expression }
-							: new[] { source.Expression, expression }),
+							? [source.Expression]
+							: [source.Expression, expression]),
 					cancellationToken);
 			}
 
