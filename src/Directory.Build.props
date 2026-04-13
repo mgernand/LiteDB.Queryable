@@ -12,7 +12,7 @@
 
 	<PropertyGroup>
 		<PackageId>$(AssemblyName)</PackageId>
-		<PackageOutputPath>..\..\package-output\$(Configuration)</PackageOutputPath>
+		<PackageOutputPath>..\..\Packages\$(Configuration)</PackageOutputPath>
 		<IncludeSymbols>false</IncludeSymbols>
 		<Authors>Matthias Gernand</Authors>
 		<Description>An IQueryable wrapper implementation for LiteDB with additional async extensions.</Description>
@@ -27,17 +27,18 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<VersionPrefix>10.0.0</VersionPrefix>
+		<VersionPrefix>10.0.1</VersionPrefix>
 		<VersionSuffix></VersionSuffix>
-		<FileVersion>$(VersionPrefix)</FileVersion>
-		<AssemblyVersion>$(VersionPrefix)</AssemblyVersion>
-		<InformationalVersion>$(Version)</InformationalVersion>
+		<Version>$(VersionPrefix)$(VersionSuffix)</Version>
+		<AssemblyVersion>$(Version)</AssemblyVersion>
+		<AssemblyInformationalVersion>$(Version)</AssemblyInformationalVersion>
+		<FileVersion>$(Version)</FileVersion>
 	</PropertyGroup>
 
 	<PropertyGroup>
 		<Product>LiteDB.Queryable</Product>
 		<AssemblyTitle>LiteDB.Queryable</AssemblyTitle>
-		<Copyright>Copyright © 2022-2025 Matthias Gernand. All rights reserved.</Copyright>
+		<Copyright>Copyright © 2022-2026 Matthias Gernand. All rights reserved.</Copyright>
 	</PropertyGroup>
 
 </Project>

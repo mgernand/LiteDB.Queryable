@@ -1,10 +1,3 @@
-__I am leaving GitHub__
-
-Please follow me on [Codeberg](https://codeberg.org/mgernand)!  
-You can also find the sources of this repository there!
-
-Onwards! ✊
-
 # LiteDB.Queryable
 
 An IQueryable wrapper implementation for LiteDB with additional async extensions.

@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/.items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <File Path="src/Directory.Build.props" />
+    <Project Path="src/LiteDB.Queryable/LiteDB.Queryable.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/LiteDB.Queryable.UnitTests/LiteDB.Queryable.UnitTests.csproj" />
+  </Folder>
+</Solution>
